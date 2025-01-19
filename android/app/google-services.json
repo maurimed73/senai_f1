@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "880481616842",
+    "project_id": "senaif1-e5adf",
+    "storage_bucket": "senaif1-e5adf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880481616842:android:63a87c7ca3903718644533",
+        "android_client_info": {
+          "package_name": "com.example.senai_f1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp5R25zCdKgJFPlsJqLnVbzQhwtIB-cZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

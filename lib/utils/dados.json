@@ -1,0 +1,29 @@
+[
+    {
+        "idTarefa": 1,
+        "nomeTarefa": "Escopo",
+        "responsavelTarefa": "João Miguel",
+        "dataInicial": "01/01/2025",
+        "dataEntrega": "15/02/2025",
+        "situacao": "Entregue",
+        "descricao": "Detalhes sobre o escopo do projeto."
+    },
+    {
+        "idTarefa": 2,
+        "nomeTarefa": "Pesquisa",
+        "responsavelTarefa": "Ninive",
+        "dataInicial": "01/01/2025",
+        "dataEntrega": "25/01/2025",
+        "situacao": "Finalizando",
+        "descricao": "Detalhes sobre a pesquisa do projeto."
+    },
+    {
+        "idTarefa": 3,
+        "nomeTarefa": "Marketing",
+        "responsavelTarefa": "Daniel",
+        "dataInicial": "01/01/2025",
+        "dataEntrega": "20/03/2025",
+        "situacao": "Ativo",
+        "descricao": "Detalhes sobre o Marketing do projeto."
+    }
+]
