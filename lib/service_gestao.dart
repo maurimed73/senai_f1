@@ -14,7 +14,7 @@ class ServiceGestao {
   List<ProjetoModel> parseProjetos() {
     List<dynamic> data = json.decode(jsonData); // Decodificando o JSON
     return data
-        .map((item) => ProjetoModel.fromJson(item))
+        .map((item) => ProjetoModel.fromMap(item))
         .toList(); // Convertendo para lista de objetos
   }
 }

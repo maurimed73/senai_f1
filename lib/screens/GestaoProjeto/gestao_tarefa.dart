@@ -1,24 +1,27 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
-import 'package:senai_f1/provider/provider_main.dart';
 
+import 'package:senai_f1/models/projeto_model.dart';
+import 'package:senai_f1/provider/provider_main.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
-import 'package:senai_f1/models/projeto_model.dart';
 
-class DetailPage extends StatefulWidget {
+class GestaoDetailPage extends StatefulWidget {
   ProjetoModel? projeto;
-  DetailPage({super.key, this.projeto});
+  GestaoDetailPage({super.key, this.projeto});
 
   @override
-  State<DetailPage> createState() => _DetailPageState();
+  State<GestaoDetailPage> createState() => _GestaoDetailPageState();
 }
 
-class _DetailPageState extends State<DetailPage> {
+class _GestaoDetailPageState extends State<GestaoDetailPage> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   void initState() {
     print(widget.projeto);
@@ -36,18 +39,32 @@ class _DetailPageState extends State<DetailPage> {
 
     futureDate = formato.parse(widget.projeto!.terminoEstimado);
     Duration difference = futureDate.difference(now);
-
-    setState(() {
-      if (difference.isNegative) {
-        // Se a data já passou, exibe "Atrasado"
-        countdown = "Atrasado ${difference.inDays.abs()} dias";
-        widget.projeto!.status = Status.atrasada;
-      } else {
-        // Caso contrário, mostra a contagem regressiva
-        countdown = "${difference.inDays + 1} dias restantes";
-        widget.projeto!.status = Status.ativo;
-      }
-    });
+    if (widget.projeto!.status == Status.TERMINADA) {
+      print('**********************************************Deu certo');
+      firestore
+          .collection('TarefasGestao')
+          .doc((widget.projeto!.id).toString())
+          .update({'status': 'TERMINADA'});
+      setState(() {
+        widget.projeto!.status = Status.TERMINADA;
+      });
+    } else {
+      setState(() {
+        if (difference.isNegative) {
+          // Se a data já passou, exibe "Atrasado"
+          countdown = "Atrasado ${difference.inDays.abs()} dias";
+          var status = Status.ATRASADA;
+          firestore
+              .collection('TarefasGestao')
+              .doc((widget.projeto!.id).toString())
+              .update({'status': status.toString().split('.').last});
+        } else {
+          // Caso contrário, mostra a contagem regressiva
+          countdown = "${difference.inDays + 1} dias restantes";
+          widget.projeto!.status = Status.ATIVO;
+        }
+      });
+    }
   }
 
   @override
@@ -58,8 +75,6 @@ class _DetailPageState extends State<DetailPage> {
   AuthService serviceAuth = AuthService();
   ColorsDart colorDart = ColorsDart();
   Icon diasIcon = const Icon(Icons.timer_sharp, size: 20, color: Colors.black);
-
-  
 
   int diasDeDiferenca = 0;
   int calcularDiferencaEmDias(String data1, String data2) {
@@ -92,6 +107,7 @@ class _DetailPageState extends State<DetailPage> {
       return 0;
     }
   }
+
   DateTime futureDate = DateTime(2025, 1, 20);
   String countdown = '';
 
@@ -131,12 +147,17 @@ class _DetailPageState extends State<DetailPage> {
   String textFromDialog = "";
 
   // Variável para armazenar o valor retornado do Dialog
-  Future<String?> _openDialog(BuildContext context, titulo) async {
+  Future<String?> _openDialog(
+    BuildContext context,
+    titulo,
+    String responsavelTarefa,
+  ) async {
     final String? result = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return MyDialog(
           titulo: titulo,
+          parametro: responsavelTarefa,
         ); // Passando o Dialog que vai permitir digitar algo
       },
     );
@@ -151,21 +172,15 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final projetoProvider = Provider.of<MainModel>(context);
-    final projeto =
-        projetoProvider.projetos.firstWhere((u) => u.id == widget.projeto!.id);
-
-    print('Usuário recebido pelo provider ${projeto.nome}');
-
-    print('id ${widget.projeto!.id}');
-    print('nome: ${widget.projeto!.nome}');
-    print('data entrega ${widget.projeto!.dataEntrega}');
-    print('data inicial ${widget.projeto!.dataInicial}');
-    print('descrição ${widget.projeto!.descricao}');
-    print('inicio estimado ${widget.projeto!.inicioEstimado}');
-    print('responsável ${widget.projeto!.responsavelTarefa}');
-    print('situação ${widget.projeto!.status}');
-    print('término Estimado ${widget.projeto!.terminoEstimado}');
+    // print('id ${widget.projeto!.id}');
+    //   print('nome: ${widget.projeto!.nome}');
+    //   print('data entrega ${widget.projeto!.dataEntrega}');
+    //   print('data inicial ${widget.projeto!.dataInicial}');
+    //   print('descrição ${widget.projeto!.descricao}');
+    //   print('inicio estimado ${widget.projeto!.inicioEstimado}');
+    //   print('responsável ${widget.projeto!.responsavelTarefa}');
+    //   print('situação ${widget.projeto!.status}');
+    //   print('término Estimado ${widget.projeto!.terminoEstimado}');
 
     double alturaTela = MediaQuery.of(context).size.height;
 
@@ -1024,13 +1039,26 @@ class _DetailPageState extends State<DetailPage> {
                                         ),
                                       ),
                                       onTap: () async {
-                                        resultInicioRealizado =
-                                            await _openDialog(
-                                                context, "Inicio Realizado");
+                                        if (widget.projeto!.status !=
+                                            Status.TERMINADA) {
+                                          resultInicioRealizado =
+                                              await _openDialog(
+                                                  context,
+                                                  "Inicio Realizado",
+                                                  widget.projeto!.dataInicial);
 
-                                        if (resultInicioRealizado != null) {
-                                          widget.projeto!.dataInicial =
-                                              resultInicioRealizado!;
+                                          if (resultInicioRealizado != null) {
+                                            widget.projeto!.dataInicial =
+                                                resultInicioRealizado!;
+                                            firestore
+                                                .collection('TarefasGestao')
+                                                .doc((widget.projeto!.id)
+                                                    .toString())
+                                                .update({
+                                              'dataInicial':
+                                                  widget.projeto!.dataInicial
+                                            });
+                                          }
                                         }
                                       },
                                     ),
@@ -1094,14 +1122,27 @@ class _DetailPageState extends State<DetailPage> {
                                     //  TÉRMINO REALIZADO
                                     GestureDetector(
                                       onTap: () async {
-                                        resultTerminoRealizado =
-                                            await _openDialog(
-                                                context, "Inicio Realizado");
+                                        if (widget.projeto!.status !=
+                                            Status.TERMINADA) {
+                                          resultTerminoRealizado =
+                                              await _openDialog(
+                                                  context,
+                                                  "Inicio Realizado",
+                                                  widget.projeto!.dataEntrega);
 
-                                        //mudei
-                                        if (resultTerminoRealizado != null) {
-                                          widget.projeto!.dataEntrega =
-                                              resultTerminoRealizado!;
+                                          //mudei
+                                          if (resultTerminoRealizado != null) {
+                                            widget.projeto!.dataEntrega =
+                                                resultTerminoRealizado!;
+                                            firestore
+                                                .collection('TarefasGestao')
+                                                .doc((widget.projeto!.id)
+                                                    .toString())
+                                                .update({
+                                              'dataEntrega':
+                                                  widget.projeto!.dataEntrega
+                                            });
+                                          }
                                         }
                                       },
                                       child: Card(
@@ -1212,17 +1253,27 @@ class _DetailPageState extends State<DetailPage> {
                                     //  RESPONSÁVEL
                                     GestureDetector(
                                       onTap: () async {
-                                        resultResponsavel = (await _openDialog(
-                                            context, "Responsável"));
+                                        if (widget.projeto!.status !=
+                                            Status.TERMINADA) {
+                                          resultResponsavel =
+                                              (await _openDialog(
+                                            context,
+                                            "Responsável",
+                                            widget.projeto!.responsavelTarefa,
+                                          ));
 
-                                        if (resultResponsavel != null) {
-                                          widget.projeto!.responsavelTarefa =
-                                              resultResponsavel!;
-
-                                          projetoProvider.editarResponsavel(
-                                              widget.projeto!.id,
-                                              widget
-                                                  .projeto!.responsavelTarefa);
+                                          if (resultResponsavel != null) {
+                                            widget.projeto!.responsavelTarefa =
+                                                resultResponsavel!;
+                                            firestore
+                                                .collection('TarefasGestao')
+                                                .doc((widget.projeto!.id)
+                                                    .toString())
+                                                .update({
+                                              'responsavelTarefa': widget
+                                                  .projeto!.responsavelTarefa
+                                            });
+                                          }
                                         }
                                       },
                                       child: Card(
@@ -1321,19 +1372,33 @@ class _DetailPageState extends State<DetailPage> {
                     width: MediaQuery.of(context).size.width * 0.8,
                     height: alturaTela < 600 ? 35 : 45,
                     decoration: BoxDecoration(
-                        color: widget.projeto!.status == Status.terminada
+                        color: widget.projeto!.status == Status.TERMINADA
                             ? Colors.grey
                             : colorDart.VermelhoPadrao,
                         border: Border.all(color: Colors.black, width: 1),
                         borderRadius: BorderRadius.circular(4)),
                     child: TextButton(
                       onPressed: () {
-                        setState(() {
-                          widget.projeto!.status = Status.terminada;
-                        });
+                        if (widget.projeto!.dataInicial != "" &&
+                            widget.projeto!.dataEntrega != "" &&
+                            widget.projeto!.responsavelTarefa != "") {
+                          setState(() {
+                            widget.projeto!.status = Status.TERMINADA;
+                          });
+
+                          Status status = Status.TERMINADA;
+                          firestore
+                              .collection('TarefasGestao')
+                              .doc((widget.projeto!.id).toString())
+                              .update({
+                            'status': status.toString().split('.').last
+                          });
+                        }
                       },
                       child: Text(
-                        'FINALIZAR TAREFA',
+                        widget.projeto!.status == Status.TERMINADA
+                            ? 'TAREFA REALIZADA'
+                            : 'FINALIZAR TAREFA',
                         style: TextStyle(
                             fontSize: alturaTela < 600 ? 14 : 20,
                             fontFamily: 'Poppins',
@@ -1355,10 +1420,15 @@ class _DetailPageState extends State<DetailPage> {
 class MyDialog extends StatelessWidget {
   final _formKeyParameter = GlobalKey<FormState>();
   String titulo;
-  final TextEditingController controller = TextEditingController();
+  String parametro;
+
   final maskFormatter = MaskTextInputFormatter(mask: '##/##/####');
 
-  MyDialog({super.key, required this.titulo});
+  MyDialog({
+    Key? key,
+    required this.titulo,
+    required this.parametro,
+  }) : super(key: key);
 
   String? _validateDate(String? value) {
     if (value == null || value.isEmpty) {
@@ -1388,6 +1458,7 @@ class MyDialog extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) {
+    TextEditingController controller = TextEditingController(text: parametro);
     return Dialog(
       child: Form(
         key: _formKeyParameter,

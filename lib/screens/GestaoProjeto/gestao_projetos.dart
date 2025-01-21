@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
-import 'package:senai_f1/widgets/tabBar_Gestao/grid_garrafas4.dart';
-import 'package:senai_f1/widgets/tabBar_Gestao/grid_garrafas5.dart';
+import 'package:senai_f1/screens/GestaoProjeto/gestao_grid_garrafas5.dart';
 //import 'package:awesome_dialog/awesome_dialog.dart';
 
 class GestaoProjetos extends StatelessWidget {
@@ -38,7 +37,7 @@ class GestaoProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: colorDart.VermelhoPadrao,
+                        color: Color.fromRGBO(146, 0, 0, 1),
                       ),
                       const SizedBox(
                         width: 20,
@@ -60,7 +59,7 @@ class GestaoProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: Colors.amber,
+                        color: Color.fromRGBO(248, 200, 61, 1),
                       ),
                       const SizedBox(
                         width: 20,
@@ -82,7 +81,29 @@ class GestaoProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: Colors.black,
+                        color: Color.fromRGBO(45, 46, 45, 1),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Text('TAREFA FINALIZADA',
+                          style:
+                              TextStyle(fontFamily: 'Poppins', fontSize: 11)),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: 350,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        color: Color.fromRGBO(14, 82, 23, 1),
                       ),
                       const SizedBox(
                         width: 20,
@@ -92,9 +113,6 @@ class GestaoProjetos extends StatelessWidget {
                               TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 10,
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -159,7 +177,10 @@ class GestaoProjetos extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              print('voltar');
+                              Navigator.pop(context);
+                            },
                             child: Container(
                               width: 35, // Largura da bola
                               height: 35, // Altura da bola
@@ -217,20 +238,23 @@ class GestaoProjetos extends StatelessWidget {
                 // // Tijolo ,  Total de Garrafas  ,  Legenda
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          //GARRAFAS E TIJOLO
                           Container(
-                            height: 70,
+                            height: 90,
                             width: MediaQuery.of(context).size.width * 0.8,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                     color: colorDart.VermelhoPadrao, width: 1)),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -248,14 +272,24 @@ class GestaoProjetos extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 0,
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.07,
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(right: 20),
+                                  padding: const EdgeInsets.only(right: 10),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
+                                      const Text(
+                                        'Gestão de Projetos',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
                                       Text(
                                         'Total de Garrafas \n arrecadadas: $totalGarrafas',
                                         style: const TextStyle(
@@ -270,6 +304,8 @@ class GestaoProjetos extends StatelessWidget {
                               ],
                             ),
                           ),
+
+                          // LEGENDA
                           Column(
                             children: [
                               GestureDetector(
@@ -307,7 +343,7 @@ class GestaoProjetos extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Align(
-                      alignment: Alignment.centerLeft, child: Garrafas5()),
+                      alignment: Alignment.centerLeft, child: GarrafasGestao()),
                 ),
                 Spacer(),
 

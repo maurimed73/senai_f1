@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:senai_f1/models/projeto_model.dart';
 
-class MainModel with ChangeNotifier {
+class MainModel extends ChangeNotifier {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   bool _visibleProjects = true;
   bool _loading = false;
 
@@ -23,75 +25,26 @@ class MainModel with ChangeNotifier {
     notifyListeners();
   }
 
-  // List<ProjetoModel> _projetos = [
-  // ProjetoModel(
-  //     id: 10,
-  //     nome: 'Mauricio',
-  //     descricao: 'descrição de projeto',
-  //     responsavelTarefa: 'BUGA',
-  //     dataInicial: '01/01/2025',
-  //     dataEntrega: '10/03/2025',
-  //     status: Status.ativo,
-  //     inicioEstimado: '10/01/2025',
-  //     terminoEstimado: '30/03/2025'),
-  // ProjetoModel(
-  //     id: 11,
-  //     nome: 'João',
-  //     descricao: 'descrição de projeto',
-  //     responsavelTarefa: 'João',
-  //     dataInicial: '01/01/2025',
-  //     dataEntrega: '10/03/2025',
-  //     status: Status.ativo,
-  //     inicioEstimado: '10/01/2025',
-  //     terminoEstimado: '30/03/2025'),
-  // ProjetoModel(
-  //     id: 12,
-  //     nome: 'Rodrigo',
-  //     descricao: 'descrição de projeto',
-  //     responsavelTarefa: 'Rodrigo',
-  //     dataInicial: '01/01/2025',
-  //     dataEntrega: '10/03/2025',
-  //     status: Status.ativo,
-  //     inicioEstimado: '10/01/2025',
-  //     terminoEstimado: '30/03/2025'),
-  // ProjetoModel(
-  //     id: 13,
-  //     nome: 'Silvia',
-  //     descricao: 'descrição de projeto',
-  //     responsavelTarefa: 'Silvia',
-  //     dataInicial: '01/01/2025',
-  //     dataEntrega: '10/03/2025',
-  //     status: Status.ativo,
-  //     inicioEstimado: '10/01/2025',
-  //     terminoEstimado: '30/03/2025'),
-  //];
-  // Getter para acessar a lista de usuários
-  List<ProjetoModel> _projetos = [];
-  List<ProjetoModel> get projetos => _projetos;
+  List<ProjetoModel> _items = [];
+  bool _isLoading = false;
 
-  void adicionarProjeto(ProjetoModel projeto) {
-    _projetos.add(projeto);
-    notifyListeners();
-  }
+  List<ProjetoModel> get items => _items;
+  bool get isLoading => _isLoading;
 
-  // Função para editar o nome de um usuário na lista
-  void editarResponsavel(int id, String novoNome) {
-    final projeto = projetos.firstWhere((projeto) => projeto.id == id);
-    projeto.responsavelTarefa = novoNome;
-    notifyListeners(); // Notifica os ouvintes sobre a mudança
-  }
-
-  // Função para adicionar um novo usuário à lista
-  void adicionarTarefa(ProjetoModel projeto) {
-    _projetos.add(projeto);
-    print('Total de ${_projetos.length} projetos na lista de objetos');
-    print('${projetos[0].nome}');
-    notifyListeners();
-  }
-
-  // Função para remover um usuário da lista
-  void removerTarefa(String id) {
-    _projetos.removeWhere((projeto) => projeto.id == id);
+  // Função para buscar os dados do Firestore
+  Future<void> fetchItems() async {
+    List<ProjetoModel> temp = [];
+    print('*******************************  COMEÇOU');
+    _isLoading = true; // Inicia o carregamento
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await firestore.collection("Tarefas").get();
+    for (var doc in snapshot.docs) {
+      temp.add(ProjetoModel.fromMap(doc.data()));
+      print(doc.data());
+    }
+    print('*******************************  TERMINOU');
+    _isLoading = false; // Fim do carregamento
+    _items = temp;
     notifyListeners();
   }
 }

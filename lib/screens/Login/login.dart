@@ -20,8 +20,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() async {
     _loginService.loadingUser();
-    
-    
+
     User? user = await _authService.signInWithEmailPassword(
       _emailController.text,
       _passwordController.text,
@@ -31,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       // Login bem-sucedido, navegue para a próxima tela
-      Navigator.pushReplacementNamed(context, '/gestao');
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       // Exibir mensagem de erro
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

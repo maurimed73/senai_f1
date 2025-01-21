@@ -1,28 +1,38 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import 'package:senai_f1/models/projeto_model.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:senai_f1/screens/tarefa.dart';
+import 'package:senai_f1/provider/provider_main.dart';
+
+import 'package:senai_f1/screens/GestaoProjeto/gestao_tarefa.dart';
+import 'package:senai_f1/screens/TarefasGerais/tarefas_Gerais_tarefa.dart';
 import 'package:senai_f1/utils/colors.dart';
 
-class Garrafas4 extends StatefulWidget {
+class GarrafasTarefasGerais extends StatefulWidget {
   @override
-  State<Garrafas4> createState() => _Garrafas4State();
+  State<GarrafasTarefasGerais> createState() => _GarrafasTarefasGeraisState();
 }
 
-class _Garrafas4State extends State<Garrafas4> {
+class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
   ColorsDart colorsDart = ColorsDart();
   final _formKey = GlobalKey<FormState>();
   List<Widget> originalList = [];
+  List<ProjetoModel> projetosTarefasGerais = [];
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
+    refresh();
+    // getProjetosFromFirebase();
     originalList.add(GestureDetector(
       onTap: () {
-        _showLargeDialog();
+        _criarNovaTarefa();
       },
       child: Container(
           width: 90,
@@ -45,68 +55,153 @@ class _Garrafas4State extends State<Garrafas4> {
     super.dispose();
   }
 
-  void novaTarefa(ProjetoModel? projeto) {
-    if (projeto != null) {}
+  void novaTarefa(ProjetoModel? projetoVindoDoDialog) {
+    if (projetoVindoDoDialog != null) {}
 
-    print(projeto!.id);
-    originalList.add(
-      GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DetailPage(
-                  projeto: projeto,
-                ),
-              ));
-        },
-        child: Container(
-            width: 90,
-            height: 143,
-            color: ColorsDart().FundoApp,
+    // salvar no firestore
+    firestore
+        .collection('TarefasTarefasGerais')
+        .doc(projetoVindoDoDialog!.id.toString())
+        .set(projetoVindoDoDialog.toMap());
+
+    // List<ProjetoModel> projetos =
+    //     Provider.of<MainModel>(context, listen: false).projetos;
+
+    // Remover todos os itens após o primeiro (índice 1)
+    if (originalList.length > 1) {
+      originalList.removeRange(1, originalList.length);
+    }
+
+    projetosTarefasGerais.forEach(
+      (projeto) {
+        originalList.add(
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GestaoDetailPage(
+                      projeto: projeto,
+                    ),
+                  ));
+              refresh();
+            },
             child: Container(
+              width: 90,
+              height: 143,
+              color: ColorsDart().FundoApp,
+              child: Container(
                 height: 160,
                 child: Center(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 70,
-                      height: 120,
-                      color: Colors.transparent,
-                      child: Image.asset(
-                        'assets/garrafa_tarefa.png',
-                        fit: BoxFit.fitHeight,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 70,
+                        height: 120,
+                        color: Colors.transparent,
+                        child: Image.asset(
+                          projeto.status == Status.ATRASADA
+                              ? 'assets/garrafa_atrasada.png'
+                              : projeto.status == Status.TERMINADA
+                                  ? 'assets/garrafa_finalizada.png'
+                                  : 'assets/garrafa_andamento.png',
+                          fit: BoxFit.fitHeight,
+                        ),
                       ),
-                    ),
-                    Text(
-                      projeto != null ? projeto.nome : "sem nome",
-                      maxLines: 1, // Impede que o texto quebre linha
-                      overflow: TextOverflow
-                          .ellipsis, // Exibe '...' se o texto não couber
-                      style: TextStyle(fontSize: 8),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                )))),
-      ),
+                      Text(
+                        projeto != null ? projeto.nome : "sem nome",
+                        maxLines: 1, // Impede que o texto quebre linha
+                        overflow: TextOverflow
+                            .ellipsis, // Exibe '...' se o texto não couber
+                        style: TextStyle(fontSize: 11),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ); // Adiciona cada item na nova lista
+      },
     );
-    setState(() {});
   }
 
-  // Função para submeter o formulário
-  // void _submitForm() {
-  //   if (_formKey.currentState?.validate() ?? false) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Formulário válido!')),
-  //     );
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Há erros no formulário')),
-  //     );
-  //   }
-  // }
+  refresh() async {
+    List<ProjetoModel> temp = [];
+    print('*******************************  COMEÇOU');
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await firestore.collection("TarefasTarefasGerais").get();
+    for (var doc in snapshot.docs) {
+      temp.add(ProjetoModel.fromMap(doc.data()));
+      print(doc.data());
+    }
+    print('*******************************  TERMINOU');
+    // Remover todos os itens após o primeiro (índice 1)
+    if (originalList.length > 1) {
+      originalList.removeRange(1, originalList.length);
+    }
+
+    temp.forEach(
+      (projeto) {
+        originalList.add(
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TarefasGeraisDetailPage(
+                      projeto: projeto,
+                    ),
+                  ));
+            },
+            child: Container(
+              width: 90,
+              height: 143,
+              color: ColorsDart().FundoApp,
+              child: Container(
+                height: 160,
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 70,
+                        height: 120,
+                        color: Colors.transparent,
+                        child: Image.asset(
+                          projeto.status == Status.ATRASADA
+                              ? 'assets/garrafa_atrasada.png'
+                              : projeto.status == Status.TERMINADA
+                                  ? 'assets/garrafa_finalizada.png'
+                                  : 'assets/garrafa_andamento.png',
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
+                      Text(
+                        projeto != null ? projeto.nome : "sem nome",
+                        maxLines: 1, // Impede que o texto quebre linha
+                        overflow: TextOverflow
+                            .ellipsis, // Exibe '...' se o texto não couber
+                        style: TextStyle(fontSize: 11),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ); // Adiciona cada item na nova lista
+      },
+    );
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   TextEditingController tituloAdd = TextEditingController();
   TextEditingController descricaoAdd = TextEditingController();
@@ -148,7 +243,7 @@ class _Garrafas4State extends State<Garrafas4> {
     }
   }
 
-  Future<void> _showLargeDialog() async {
+  Future<void> _criarNovaTarefa() async {
     tituloAdd.text = "";
     descricaoAdd.text = "";
     inicioEstimadoAdd.text = "";
@@ -217,7 +312,7 @@ class _Garrafas4State extends State<Garrafas4> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Container(
@@ -410,17 +505,28 @@ class _Garrafas4State extends State<Garrafas4> {
                               responsavelTarefa: responsavelTarefa,
                               dataInicial: dataInicial,
                               dataEntrega: dataEntrega,
-                              status: Status.ativo,
+                              status: Status.ATIVO,
                               inicioEstimado: inicioEstimado,
                               terminoEstimado: terminoEstimado,
                             );
 
-                            novaTarefa(addTarefa);
+                            // mandar para o banco
+                            firestore
+                                .collection('TarefasTarefasGerais')
+                                .doc((addTarefa.id).toString())
+                                .set(addTarefa.toMap());
+
+                            refresh();
+                            // MÉTODOS PARA SALVAR TAREFA
+                            // Provider.of<MainModel>(context, listen: false)
+                            //     .adicionarProjeto(addTarefa);
+
+                            // novaTarefa(addTarefa);
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Tarefa Adicionada!'),
-                                duration: Duration(seconds: 1),
+                                duration: Duration(seconds: 2),
                               ),
                             );
                             Navigator.pop(context);
@@ -461,10 +567,16 @@ class _Garrafas4State extends State<Garrafas4> {
     );
   }
 
+  //**************************************************************************************
+  //************************* PARÂMETROS PARA NOVA PÁGINA ********************************
+
   @override
   Widget build(BuildContext context) {
-    print('Número de Item da Lista: ${originalList.length}');
-    print('impressão da lista:  ${originalList}');
+    // refresh();
+    // for (var element in MainModel().projetos) {
+    //   print('Responsáveis pelas Tarefas:  ${element.responsavelTarefa}');
+    // }
+
     // Função para dividir a lista original em sublistas com até 8 itens
     List<List<Widget>> splitListIntoChunks(List<Widget> list, int chunkSize) {
       List<List<Widget>> chunkedLists = [];
@@ -478,31 +590,37 @@ class _Garrafas4State extends State<Garrafas4> {
     // Dividindo a lista em sublistas de até 8 itens
     List<List<Widget>> wrappedLists = splitListIntoChunks(originalList, 4);
 
-    // Criando a Row com Wraps
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal, // Permite rolagem horizontal
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: wrappedLists.map((wrapList) {
-              return SizedBox(
-                width: 190,
-                child: Container(
-                  margin: EdgeInsets.only(right: 0), // Espaço entre os wraps
-                  child: Wrap(
-                    spacing: 5, // Espaçamento entre os itens dentro do Wrap
-                    runSpacing: 10, // Espaçamento entre as linhas do Wrap
-                    children: wrapList,
+    return Consumer<MainModel>(
+      builder: (context, value, child) => SingleChildScrollView(
+        scrollDirection: Axis.horizontal, // Permite rolagem horizontal
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            value.loading
+                ? const CircularProgressIndicator()
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: wrappedLists.map((wrapList) {
+                      return SizedBox(
+                        width: 190,
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                              right: 0), // Espaço entre os wraps
+                          child: Wrap(
+                            spacing:
+                                5, // Espaçamento entre os itens dentro do Wrap
+                            runSpacing:
+                                10, // Espaçamento entre as linhas do Wrap
+                            children: wrapList,
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

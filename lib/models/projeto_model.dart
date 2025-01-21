@@ -22,34 +22,43 @@ class ProjetoModel {
     required this.terminoEstimado,
   });
 
-  // Converte o JSON para o objeto ProjetoModel
-  factory ProjetoModel.fromJson(Map<String, dynamic> json) {
+  // Converte o JSON para o objeto ProjetoModel   RECEBENDO DO FIREBASE
+  factory ProjetoModel.fromMap(Map<String, dynamic> json) {
+    // Converte de String para Status (enum)
+    Status parseStatus(String statusString) {
+      return Status.values
+          .firstWhere((e) => e.toString().split('.').last == statusString);
+    }
+
     return ProjetoModel(
-        id: json['id'],
-        nome: json['name'],
-        descricao: json['description'],
-        responsavelTarefa: json['responsavelTarefa'],
-        dataInicial: json['dataInicial'],
-        dataEntrega: json['dataEntrega'],
-        status: json['status'],
-        inicioEstimado: json['inicioEstimado'],
-        terminoEstimado: json['terminoEstimado']);
+      id: json['id'],
+      nome: json['nome'],
+      descricao: json['descricao'],
+      responsavelTarefa: json['responsavelTarefa'],
+      dataInicial: json['dataInicial'],
+      dataEntrega: json['dataEntrega'],
+      inicioEstimado: json['inicioEstimado'],
+      terminoEstimado: json['terminoEstimado'],
+      status: parseStatus(
+        json['status'],
+      ),
+    );
   }
 
-  // Converte o objeto ProjetoModel de volta para JSON
-  Map<String, dynamic> toJson() {
+  // Converte o objeto ProjetoModel de volta para JSON  ENVIANDO PARA FIREBASE
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': nome,
-      'description': descricao,
+      'nome': nome,
+      'descricao': descricao,
       'responsavelTarefa': responsavelTarefa,
       'dataInicial': dataInicial,
       'dataEntrega': dataEntrega,
-      'status': status,
+      'status': status.toString().split('.').last,
       'inicioEstimado': inicioEstimado,
       'terminoEstimado': terminoEstimado
     };
   }
 }
 
-enum Status { ativo, atrasada, terminada }
+enum Status { ATIVO, ATRASADA, TERMINADA, TERMINANDO }
