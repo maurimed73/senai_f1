@@ -1,14 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:provider/provider.dart';
-
 import 'package:senai_f1/models/projeto_model.dart';
-import 'package:senai_f1/provider/provider_main.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
 
@@ -22,6 +19,7 @@ class EngenhariaDetailPage extends StatefulWidget {
 
 class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  bool terminando = false;
   @override
   void initState() {
     print(widget.projeto);
@@ -62,6 +60,9 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
           // Caso contrário, mostra a contagem regressiva
           countdown = "${difference.inDays + 1} dias restantes";
           widget.projeto!.status = Status.ATIVO;
+          if (difference.inDays + 1 < 4) {
+            terminando = true;
+          }
         }
       });
     }
@@ -95,9 +96,12 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
         size: 20,
         color: Colors.black,
       );
-
       // Retorna a diferença em dias
-      return diferenca.inDays;
+      if (diferenca.inDays == 0) {
+        return diferenca.inDays + 1;
+      } else {
+        return diferenca.inDays;
+      }
     } else {
       diasIcon = const Icon(
         Icons.timer_sharp,
@@ -172,16 +176,6 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    // print('id ${widget.projeto!.id}');
-    //   print('nome: ${widget.projeto!.nome}');
-    //   print('data entrega ${widget.projeto!.dataEntrega}');
-    //   print('data inicial ${widget.projeto!.dataInicial}');
-    //   print('descrição ${widget.projeto!.descricao}');
-    //   print('inicio estimado ${widget.projeto!.inicioEstimado}');
-    //   print('responsável ${widget.projeto!.responsavelTarefa}');
-    //   print('situação ${widget.projeto!.status}');
-    //   print('término Estimado ${widget.projeto!.terminoEstimado}');
-
     double alturaTela = MediaQuery.of(context).size.height;
 
     //INÍCIO
@@ -215,6 +209,7 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
                         children: [
                           GestureDetector(
                             onTap: () {
+                              HapticFeedback.lightImpact();
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -246,7 +241,9 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                            },
                             child: Container(
                               width: 40, // Largura da bola
                               height: 35, // Altura da bola
@@ -295,11 +292,19 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
                                       0.24),
                                   color: Colors.transparent,
                                   child: Image.asset(
-                                    'assets/garrafa_tarefa.png',
+                                    widget.projeto!.status == Status.ATRASADA
+                                        ? 'assets/garrafa_atrasada.png'
+                                        : widget.projeto!.status ==
+                                                Status.TERMINADA
+                                            ? 'assets/garrafa_finalizada.png'
+                                            : terminando
+                                                ? 'assets/garrafa_terminando.png'
+                                                : 'assets/garrafa_andamento.png',
                                     fit: BoxFit.contain,
                                   ),
                                 ),
                               ),
+
                               // ROW -> SEGUNDO  ELEMENTO COLUNA COM NOME E DESCRIÇÃO DA TAREFA
                               Container(
                                 padding: const EdgeInsets.only(
@@ -936,6 +941,7 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
                         borderRadius: BorderRadius.circular(4)),
                     child: TextButton(
                       onPressed: () {
+                        HapticFeedback.lightImpact();
                         if (widget.projeto!.dataInicial != "" &&
                             widget.projeto!.dataEntrega != "" &&
                             widget.projeto!.responsavelTarefa != "") {

@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:senai_f1/screens/HomeScreen.dart';
+import 'package:senai_f1/screens/sessao_das_areas/HomeScreen.dart';
 import 'package:senai_f1/screens/GestaoProjeto/gestao_projetos.dart';
 
 import 'package:senai_f1/screens/Login/login.dart';

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:senai_f1/screens/Empreendimento/empreendimento_grid_garrafas5.dart';
-import 'package:senai_f1/screens/Reciclagem/reciclagem_empreendimento.dart';
+import 'package:senai_f1/screens/Engenharia/regional/engenharia_grid_garrafas5.dart';
+import 'package:senai_f1/screens/Reciclagem/reciclagem_engenharia.dart';
+import 'package:senai_f1/screens/Tijolo/tijolo_engenharia.dart';
+import 'package:senai_f1/screens/sessao_das_areas/HomeScreen.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
 import 'package:senai_f1/widgets/customDrawer.dart';
-
 //import 'package:awesome_dialog/awesome_dialog.dart';
 
-class EmpreendimentoProjetos extends StatelessWidget {
+class EngenhariaProjetos extends StatelessWidget {
   // ServiceGestao service = ServiceGestao();
 
-  EmpreendimentoProjetos({super.key});
+  EngenhariaProjetos({super.key});
   AuthService serviceAuth = AuthService();
   ColorsDart colorDart = ColorsDart();
 // Função que exibe o AlertDialog
@@ -67,7 +68,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                       const SizedBox(
                         width: 20,
                       ),
-                      Text('TAREFA TERMINANDO',
+                      const Text('TAREFA TERMINANDO',
                           style:
                               TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                     ],
@@ -76,7 +77,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                Container(
+                SizedBox(
                   width: 350,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -84,12 +85,12 @@ class EmpreendimentoProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: Color.fromRGBO(45, 46, 45, 1),
+                        color: const Color.fromRGBO(45, 46, 45, 1),
                       ),
                       const SizedBox(
                         width: 20,
                       ),
-                      Text('TAREFA FINALIZADA',
+                      const Text('TAREFA FINALIZADA',
                           style:
                               TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                     ],
@@ -98,7 +99,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                Container(
+                SizedBox(
                   width: 350,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -106,18 +107,18 @@ class EmpreendimentoProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: Color.fromRGBO(14, 82, 23, 1),
+                        color: const Color.fromRGBO(14, 82, 23, 1),
                       ),
                       const SizedBox(
                         width: 20,
                       ),
-                      Text('TAREFA EM ANDAMENTO',
+                      const Text('TAREFA EM ANDAMENTO',
                           style:
                               TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
@@ -126,14 +127,14 @@ class EmpreendimentoProjetos extends StatelessWidget {
                       borderRadius: BorderRadius.circular(
                           4), // Bordas arredondadas com 4 de raio
                     ),
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 8), // Padding opcional
                   ),
                   onPressed: () {
-                    HapticFeedback.lightImpact();
+                    HapticFeedback.lightImpact(); // Vibração leve
                     Navigator.of(context).pop(); // Fecha o dialog
                   },
-                  child: Text(
+                  child: const Text(
                     'Fechar',
                     style: TextStyle(color: Colors.white),
                   ),
@@ -159,7 +160,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.only(top: 32, bottom: 0, left: 8, right: 8),
         child: Center(
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -183,7 +184,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              HapticFeedback.lightImpact();
+                              HapticFeedback.lightImpact(); // Vibração leve
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -195,7 +196,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                               ),
                               child: const Center(
                                 child: Icon(
-                                  Icons.house, // Ícone de casa
+                                  Icons.arrow_back, // Ícone de casa
                                   color: Colors.white, // Cor do ícone
                                   size: 25, // Tamanho do ícone
                                 ),
@@ -216,7 +217,12 @@ class EmpreendimentoProjetos extends StatelessWidget {
                           ),
                           GestureDetector(
                             onTap: () {
-                              HapticFeedback.lightImpact();
+                              HapticFeedback.lightImpact(); // Vibração leve
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Homescreen(),
+                                  ));
                             },
                             child: Container(
                               width: 40, // Largura da bola
@@ -229,7 +235,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                                 padding: EdgeInsets.only(
                                     bottom: 0, left: 0, right: 0),
                                 child: Icon(
-                                  Icons.person,
+                                  Icons.house,
                                   color: Colors.white,
                                 ),
                               ),
@@ -286,7 +292,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Text(
-                                        'Empreendimento',
+                                        'Engenharia',
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
@@ -314,7 +320,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  HapticFeedback.lightImpact();
+                                  HapticFeedback.lightImpact(); // Vibração leve
                                   _showDialog(context);
                                 },
                                 child: Container(
@@ -349,7 +355,7 @@ class EmpreendimentoProjetos extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Align(
                       alignment: Alignment.centerLeft,
-                      child: GarrafasEmpreendimento()),
+                      child: GarrafasEngenharia()),
                 ),
                 Spacer(),
 
@@ -361,12 +367,11 @@ class EmpreendimentoProjetos extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          HapticFeedback.lightImpact();
+                          HapticFeedback.lightImpact(); // Vibração leve
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    ReciclagemEmpreendimento(),
+                                builder: (context) => ReciclagemEngenharia(),
                               ));
                         },
                         child: Container(
@@ -391,6 +396,11 @@ class EmpreendimentoProjetos extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           HapticFeedback.lightImpact();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TijoloEngenharia(),
+                              ));
                         },
                         child: Container(
                           alignment: Alignment.center,

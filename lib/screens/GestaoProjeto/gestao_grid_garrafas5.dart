@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import 'package:senai_f1/models/projeto_model.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:senai_f1/provider/provider_main.dart';
-
 import 'package:senai_f1/screens/GestaoProjeto/gestao_tarefa.dart';
 import 'package:senai_f1/utils/colors.dart';
 
@@ -31,6 +28,7 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
     // getProjetosFromFirebase();
     originalList.add(GestureDetector(
       onTap: () {
+        HapticFeedback.lightImpact();
         _criarNovaTarefa();
       },
       child: Container(
@@ -54,78 +52,119 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
     super.dispose();
   }
 
-  void novaTarefa(ProjetoModel? projetoVindoDoDialog) {
-    if (projetoVindoDoDialog != null) {}
+  // void novaTarefa(ProjetoModel? projetoVindoDoDialog) {
+  //   if (projetoVindoDoDialog != null) {}
 
-    // salvar no firestore
-    firestore
-        .collection('TarefasGestao')
-        .doc(projetoVindoDoDialog!.id.toString())
-        .set(projetoVindoDoDialog.toMap());
+  //   // salvar no firestore
+  //   firestore
+  //       .collection('TarefasGestao')
+  //       .doc(projetoVindoDoDialog!.id.toString())
+  //       .set(projetoVindoDoDialog.toMap());
 
-    // List<ProjetoModel> projetos =
-    //     Provider.of<MainModel>(context, listen: false).projetos;
+  //   // List<ProjetoModel> projetos =
+  //   //     Provider.of<MainModel>(context, listen: false).projetos;
 
-    // Remover todos os itens após o primeiro (índice 1)
-    if (originalList.length > 1) {
-      originalList.removeRange(1, originalList.length);
-    }
+  //   // Remover todos os itens após o primeiro (índice 1)
+  //   if (originalList.length > 1) {
+  //     originalList.removeRange(1, originalList.length);
+  //   }
+  //   // Função para converter a string para DateTime
+  //   DateTime parseDate(String dateStr) {
+  //     DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+  //     return dateFormat.parse(dateStr);
+  //   }
 
-    projetos.forEach(
-      (projeto) {
-        originalList.add(
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GestaoDetailPage(
-                      projeto: projeto,
-                    ),
-                  ));
-              refresh();
-            },
-            child: Container(
-              width: 90,
-              height: 143,
-              color: ColorsDart().FundoApp,
-              child: Container(
-                height: 160,
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 70,
-                        height: 120,
-                        color: Colors.transparent,
-                        child: Image.asset(
-                          projeto.status == Status.ATRASADA
-                              ? 'assets/garrafa_atrasada.png'
-                              : projeto.status == Status.TERMINADA
-                                  ? 'assets/garrafa_finalizada.png'
-                                  : 'assets/garrafa_andamento.png',
-                          fit: BoxFit.fitHeight,
-                        ),
-                      ),
-                      Text(
-                        projeto != null ? projeto.nome : "sem nome",
-                        maxLines: 1, // Impede que o texto quebre linha
-                        overflow: TextOverflow
-                            .ellipsis, // Exibe '...' se o texto não couber
-                        style: TextStyle(fontSize: 11),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ); // Adiciona cada item na nova lista
-      },
-    );
+  //   projetos.forEach(
+  //     (projeto) {
+  //       //print(projeto.terminoEstimado);
+  //       bool terminando = false;
+  //       // Data de destino (exemplo: 10 de março de 2025)
+  //       DateTime parsedDate = parseDate(projeto.terminoEstimado);
+  //       //print('Data convertida: $parsedDate');
+  //       // Data de hoje
+  //       DateTime today = DateTime.now();
+  //       // Calcula a diferença entre as duas datas
+  //       Duration difference = parsedDate.difference(today);
+  //       //print('diferença em dias: ${difference.inDays + 1}');
+  //       if ((difference.inDays + 1) < 4) {
+  //         terminando = true;
+  //       }
+
+  //       originalList.add(
+  //         GestureDetector(
+  //           // onTap: () {
+  //           //   HapticFeedback.lightImpact();
+  //           //   Navigator.push(
+  //           //       context,
+  //           //       MaterialPageRoute(
+  //           //         builder: (context) => GestaoDetailPage(
+  //           //           projeto: projeto,
+  //           //         ),
+  //           //       ));
+
+  //           //   refresh();
+  //           // },
+  //           child: Container(
+  //             width: 90,
+  //             height: 143,
+  //             color: ColorsDart().FundoApp,
+  //             child: Container(
+  //               height: 160,
+  //               child: Center(
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.center,
+  //                   mainAxisAlignment: MainAxisAlignment.start,
+  //                   children: [
+  //                     Container(
+  //                       width: 70,
+  //                       height: 120,
+  //                       color: Colors.transparent,
+  //                       child: Image.asset(
+  //                         projeto.status == Status.ATRASADA
+  //                             ? 'assets/garrafa_atrasada.png'
+  //                             : projeto.status == Status.TERMINADA
+  //                                 ? 'assets/garrafa_finalizada.png'
+  //                                 : terminando
+  //                                     ? 'assets/garrafa_terminando.png'
+  //                                     : 'assets/garrafa_andamento.png',
+  //                         fit: BoxFit.fitHeight,
+  //                       ),
+  //                     ),
+  //                     Text(
+  //                       projeto != null ? projeto.nome : "sem nome",
+  //                       maxLines: 1, // Impede que o texto quebre linha
+  //                       overflow: TextOverflow
+  //                           .ellipsis, // Exibe '...' se o texto não couber
+  //                       style: TextStyle(fontSize: 11),
+  //                       textAlign: TextAlign.center,
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ); // Adiciona cada item na nova lista
+  //     },
+  //   );
+  // }
+
+  void reorganizarTarefas(List<ProjetoModel> tarefas) {
+    setState(() {
+      // Ordena colocando os itens com Status.TERMINADO no final
+      tarefas.sort((a, b) {
+        // Se o status de a é TERMINADO e b não é, coloca a no final
+        if (a.status == Status.TERMINADA && b.status != Status.TERMINADA) {
+          return 1;
+        }
+        // Se o status de b é TERMINADO e a não é, coloca b no final
+        if (a.status != Status.TERMINADA && b.status == Status.TERMINADA) {
+          return -1;
+        }
+        // Se ambos são iguais, mantém a ordem original
+        return 0;
+      });
+    });
   }
 
   refresh() async {
@@ -142,19 +181,90 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
     if (originalList.length > 1) {
       originalList.removeRange(1, originalList.length);
     }
+// Função para converter a string para DateTime
+    DateTime parseDate(String dateStr) {
+      DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+      return dateFormat.parse(dateStr);
+    }
+
+    reorganizarTarefas(temp);
 
     temp.forEach(
       (projeto) {
+        //print(projeto.terminoEstimado);
+        bool terminando = false;
+        // Data de destino (exemplo: 10 de março de 2025)
+        DateTime parsedDate = parseDate(projeto.terminoEstimado);
+        //print('Data convertida: $parsedDate');
+        // Data de hoje
+        DateTime today = DateTime.now();
+        // Calcula a diferença entre as duas datas
+        Duration difference = parsedDate.difference(today);
+        //print('diferença em dias: ${difference.inDays + 1}');
+        if ((difference.inDays + 1) < 4 && (difference.inDays + 1) > 0) {
+          terminando = true;
+        }
+        print(projeto.id);
         originalList.add(
           GestureDetector(
-            onTap: () {
-              Navigator.push(
+            onLongPress: () async {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Deletar Item'),
+                    content: Text(
+                        'Item ${projeto.nome.toUpperCase()} será deletado?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          // Fecha o diálogo
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancelar'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          // Deleta o item
+                          try {
+                            // Referência do Firestore para o documento que você quer deletar
+                            await FirebaseFirestore.instance
+                                .collection('TarefasGestao')
+                                .doc(projeto.id.toString())
+                                .delete();
+                            print('Documento deletado com sucesso');
+                          } catch (e) {
+                            print('Erro ao deletar o documento: $e');
+                          }
+
+                          refresh();
+
+                          // Fecha o diálogo
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Deletar'),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              temp.removeWhere((tarefa) => tarefa.id == projeto.id);
+            },
+            onTap: () async {
+              HapticFeedback.lightImpact();
+              final retorno = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => GestaoDetailPage(
                       projeto: projeto,
                     ),
-                  ));
+                  )).then(
+                (value) {
+                  print('Voltou');
+                  refresh();
+                },
+              );
             },
             child: Container(
               width: 90,
@@ -176,7 +286,9 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
                               ? 'assets/garrafa_atrasada.png'
                               : projeto.status == Status.TERMINADA
                                   ? 'assets/garrafa_finalizada.png'
-                                  : 'assets/garrafa_andamento.png',
+                                  : terminando
+                                      ? 'assets/garrafa_terminando.png'
+                                      : 'assets/garrafa_andamento.png',
                           fit: BoxFit.fitHeight,
                         ),
                       ),
@@ -283,6 +395,7 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
                           ),
                           IconButton(
                               onPressed: () {
+                                HapticFeedback.lightImpact();
                                 Navigator.pop(context);
                               },
                               icon: const Icon(
@@ -480,6 +593,7 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
                       padding: const EdgeInsets.all(16.0),
                       child: GestureDetector(
                         onTap: () {
+                          HapticFeedback.lightImpact();
                           if (_formKey.currentState?.validate() ?? false) {
                             // Se a validação for bem-sucedida, salve os dados
                             int id = DateTime.now().millisecondsSinceEpoch;
@@ -490,12 +604,18 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
                             String dataEntrega = "";
                             String inicioEstimado = inicioEstimadoAdd.text;
                             String terminoEstimado = terminoEstimadoAdd.text;
-                            // DateTime selectedDateInicialEstmada =
-                            //     DateFormat('dd/MM/yyyy')
-                            //         .parse(inicioEstimadoAdd.text);
-                            // DateTime selectedDateEntregaEstimada =
-                            //     DateFormat('dd/MM/yyyy')
-                            //         .parse(terminoEstimadoAdd.text);
+                            Status status = Status.ATIVO;
+                            DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+                            DateTime dataConvertida =
+                                dateFormat.parse(terminoEstimado);
+                            // Obter a data atual
+                            DateTime dataAtual = DateTime.now();
+                            // Comparar as datas
+                            if (dataConvertida.isBefore(dataAtual)) {
+                              status = Status.ATRASADA;
+                            } else {
+                              status = Status.ATIVO;
+                            }
 
                             ProjetoModel addTarefa = ProjetoModel(
                               id: id,
@@ -504,7 +624,7 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
                               responsavelTarefa: responsavelTarefa,
                               dataInicial: dataInicial,
                               dataEntrega: dataEntrega,
-                              status: Status.ATIVO,
+                              status: status,
                               inicioEstimado: inicioEstimado,
                               terminoEstimado: terminoEstimado,
                             );

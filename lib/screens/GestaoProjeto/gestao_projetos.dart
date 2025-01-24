@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:senai_f1/screens/sessao_das_areas/HomeScreen.dart';
+import 'package:senai_f1/screens/Reciclagem/reciclagem_gestao.dart';
 
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
 import 'package:senai_f1/screens/GestaoProjeto/gestao_grid_garrafas5.dart';
+import 'package:senai_f1/widgets/customDrawer.dart';
 //import 'package:awesome_dialog/awesome_dialog.dart';
 
 class GestaoProjetos extends StatelessWidget {
@@ -127,6 +131,7 @@ class GestaoProjetos extends StatelessWidget {
                         horizontal: 30, vertical: 8), // Padding opcional
                   ),
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     Navigator.of(context).pop(); // Fecha o dialog
                   },
                   child: Text(
@@ -151,6 +156,7 @@ class GestaoProjetos extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colorDart.FundoApp,
+      drawer: CustomDrawer(),
       body: Padding(
         padding: const EdgeInsets.only(top: 32, bottom: 0, left: 8, right: 8),
         child: Center(
@@ -178,7 +184,8 @@ class GestaoProjetos extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              print('voltar');
+                              HapticFeedback.lightImpact();
+
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -211,8 +218,7 @@ class GestaoProjetos extends StatelessWidget {
                           ),
                           GestureDetector(
                             onTap: () {
-                              serviceAuth.signOut();
-                              Navigator.pushReplacementNamed(context, '/login');
+                              HapticFeedback.lightImpact();
                             },
                             child: Container(
                               width: 40, // Largura da bola
@@ -310,6 +316,7 @@ class GestaoProjetos extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
+                                  HapticFeedback.lightImpact();
                                   _showDialog(context);
                                 },
                                 child: Container(
@@ -353,38 +360,53 @@ class GestaoProjetos extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: 35,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.black, width: 1),
-                            borderRadius: BorderRadius.circular(4)),
-                        child: const Text(
-                          'Reciclagem',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold),
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.lightImpact(); // Vibração leve
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReciclagemGestao(),
+                              ));
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.black, width: 1),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: const Text(
+                            'Reciclagem',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: 35,
-                        decoration: BoxDecoration(
-                            color: colorDart.VermelhoPadrao,
-                            border: Border.all(color: Colors.black, width: 1),
-                            borderRadius: BorderRadius.circular(4)),
-                        child: const Text(
-                          'Tijolo',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              color: colorDart.VermelhoPadrao,
+                              border: Border.all(color: Colors.black, width: 1),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: const Text(
+                            'Tijolo',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
                         ),
                       ),
                     ],

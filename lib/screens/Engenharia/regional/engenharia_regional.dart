@@ -1,58 +1,34 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'package:senai_f1/screens/Empreendimento/empreendimento_projetos.dart';
-import 'package:senai_f1/screens/Engenharia/engenharia_projetos.dart';
-import 'package:senai_f1/screens/GestaoProjeto/gestao_projetos.dart';
-import 'package:senai_f1/screens/TarefasGerais/tarefasGerais_projetos.dart';
+import 'package:senai_f1/screens/Engenharia/regional/engenharia_projetos.dart';
+import 'package:senai_f1/screens/Reciclagem/reciclagem_engenharia.dart';
+import 'package:senai_f1/screens/Tijolo/tijolo_engenharia.dart';
 import 'package:senai_f1/services/login_service.dart';
-
 import 'package:senai_f1/utils/colors.dart';
+import 'package:senai_f1/widgets/customDrawer.dart';
 
-//import 'package:awesome_dialog/awesome_dialog.dart';
-
-class Homescreen extends StatefulWidget {
+// ignore: camel_case_types
+class regional_Engenharia extends StatefulWidget {
   // ServiceGestao service = ServiceGestao();
 
-  Homescreen({super.key});
+  const regional_Engenharia({super.key});
 
   @override
-  State<Homescreen> createState() => _HomescreenState();
+  State<regional_Engenharia> createState() => _regional_EngenhariaState();
 }
 
-class _HomescreenState extends State<Homescreen> {
+// ignore: camel_case_types
+class _regional_EngenhariaState extends State<regional_Engenharia> {
   ColorsDart colorDart = ColorsDart();
   AuthService serviceAuth = AuthService();
 
 // Função que exibe o AlertDialog
   @override
   void initState() {
-    //Provider.of<MainModel>(context, listen: false).fetchItems();
     super.initState();
   }
 
-  // void _showExitDialog(BuildContext context) {
-  //   AwesomeDialog(
-  //     context: context,
-  //     dialogType: DialogType.warning,
-  //     animType: AnimType.topSlide,
-  //     title: 'Você tem certeza?',
-  //     desc: 'Deseja sair do aplicativo?',
-  //     btnCancelOnPress: () {
-  //       // Fecha o diálogo se o usuário clicar em "Não"
-  //       Navigator.of(context).pop();
-  //     },
-  //     btnOkOnPress: () {
-  //       // Fecha o aplicativo se o usuário clicar em "Sim"
-  //       serviceAuth.signOut();
-  //       Navigator.pushReplacementNamed(context, '/login');
-  //     },
-  //     btnCancelText: 'Não',
-  //     btnOkText: 'Sim',
-  //   ).show();
-  // }
   // Função para mostrar o diálogo moderno
   void _showCustomDialog(BuildContext context) {
     showDialog(
@@ -109,6 +85,7 @@ class _HomescreenState extends State<Homescreen> {
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        HapticFeedback.lightImpact();
                         //Fecha o aplicativo se o usuário clicar em "Sim"
                         serviceAuth.signOut();
                         Navigator.pushReplacementNamed(context, '/login');
@@ -150,6 +127,7 @@ class _HomescreenState extends State<Homescreen> {
             ),
             TextButton(
               onPressed: () {
+                HapticFeedback.lightImpact();
                 serviceAuth.signOut();
                 Navigator.pushReplacementNamed(context, '/login');
               },
@@ -165,10 +143,11 @@ class _HomescreenState extends State<Homescreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: colorDart.FundoApp,
+      drawer: CustomDrawer(),
       body: Padding(
         padding: const EdgeInsets.only(top: 32, bottom: 0, left: 1, right: 1),
         child: Center(
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -197,31 +176,40 @@ class _HomescreenState extends State<Homescreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // SRR
+                                // VOLTAR
                                 Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 5),
-                                      child: Container(
-                                        width: 75, // Largura da bola
-                                        height: 35, // Altura da bola
-                                        decoration: const BoxDecoration(
-                                          color: Colors
-                                              .transparent, // Cor da bola (preto)
-                                        ),
-                                        child: Center(
-                                            child: ColorFiltered(
-                                          colorFilter: const ColorFilter.mode(
-                                              Colors.white, BlendMode.srcIn),
-                                          child: Image.asset(
-                                            'assets/logo2.png',
-                                            fit: BoxFit.cover,
+                                    GestureDetector(
+                                      onTap: () {
+                                        HapticFeedback
+                                            .lightImpact(); // Vibração leve
+                                        Navigator.pop(context);
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Container(
+                                          width: 35, // Largura da bola
+                                          height: 35, // Altura da bola
+                                          decoration: const BoxDecoration(
+                                            color: Colors
+                                                .black, // Cor da bola (preto)
+                                            shape: BoxShape
+                                                .circle, // Forma circular
                                           ),
-                                        )),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.arrow_back, // Ícone de casa
+                                              color:
+                                                  Colors.white, // Cor do ícone
+                                              size: 25, // Tamanho do ícone
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
+
                                 // LOGO CENTRAL
                                 Column(
                                   children: [
@@ -258,7 +246,7 @@ class _HomescreenState extends State<Homescreen> {
                                       padding: const EdgeInsets.only(top: 5),
                                       child: GestureDetector(
                                         onTap: () {
-                                          _showCustomDialog(context);
+                                          HapticFeedback.lightImpact();
                                         },
                                         child: Container(
                                           width: 40, // Largura da bola
@@ -291,7 +279,7 @@ class _HomescreenState extends State<Homescreen> {
                             height: MediaQuery.of(context).size.height * 0.13,
                             color: Colors.transparent,
                             child: Text(
-                              'SESSÃO DAS ÁREAS',
+                              'ENGENHARIA',
                               style: TextStyle(
                                   fontSize: 52,
                                   fontFamily: 'LeagueGothic',
@@ -303,6 +291,7 @@ class _HomescreenState extends State<Homescreen> {
                                       blurRadius:
                                           10.0, // A quantidade de desfoque da sombra
                                       color: Colors.black
+                                          // ignore: deprecated_member_use
                                           .withOpacity(0.7), // Cor da sombra
                                     ),
                                   ],
@@ -325,65 +314,135 @@ class _HomescreenState extends State<Homescreen> {
                             color: colorDart.VermelhoPadrao.withAlpha(80),
                             width: 1)),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Sessao(
-                                  corfundo: Colors.black,
-                                  titulo: 'Engenharia',
-                                  image: 'assets/icon_engenharia.png',
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            EngenhariaProjetos(),
-                                      )),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 15, right: 35, left: 35),
+                          child: SizedBox(
+                            height: 35,
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    colorDart.VermelhoPadrao, // Cor do texto
+                                elevation: 5, // Sombra
+                                shape: RoundedRectangleBorder(
+                                  // Forma do botão
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                                Sessao(
-                                  corfundo: colorDart.VermelhoPadrao,
-                                  titulo: 'Gestão de Projetos',
-                                  image: 'assets/icon_gestaoprojeto.png',
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => GestaoProjetos(),
-                                      )),
-                                ),
-                              ],
+                              ),
+                              child: const Text(
+                                'REGIONAL',
+                                style: TextStyle(fontSize: 14),
+                              ),
                             ),
-                          ],
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Sessao(
-                              corfundo: colorDart.VermelhoPadrao,
-                              titulo: 'Tarefas Gerais',
-                              image: 'assets/icon_tarefasgerais.png',
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        TarefasGeraisProjetos(),
-                                  )),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20, bottom: 20),
+                          child: Sessao(
+                            corfundo: Colors.black,
+                            image: 'assets/icon_engenharia.png',
+                          ),
+                        ),
+                        //BOTÃO TAREFAS
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: SizedBox(
+                            height: 35,
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EngenhariaProjetos(
+                                          campeonato: 'regional'),
+                                    ));
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    colorDart.VermelhoPadrao, // Cor do texto
+                                elevation: 5, // Sombra
+                                shape: RoundedRectangleBorder(
+                                  // Forma do botão
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              child: const Text(
+                                'TAREFAS',
+                                style: TextStyle(fontSize: 26),
+                              ),
                             ),
-                            Sessao(
-                              corfundo: Colors.black,
-                              titulo: 'Empreendimento',
-                              image: 'assets/icon_empreendimento.png',
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EmpreendimentoProjetos(),
-                                  )),
+                          ),
+                        ),
+                        //BOTÃO TIJOLO
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 15),
+                          child: SizedBox(
+                            height: 35,
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TijoloEngenharia(),
+                                    ));
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.white, // Cor do texto
+                                elevation: 5, // Sombra
+                                shape: RoundedRectangleBorder(
+                                  // Forma do botão
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              child: const Text('TIJOLO',
+                                  style: TextStyle(
+                                      fontSize: 26, color: Colors.black)),
                             ),
-                          ],
-                        )
+                          ),
+                        ),
+                        //BOTÃO RECICLAGEM
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: SizedBox(
+                            height: 35,
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ReciclagemEngenharia(),
+                                    ));
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    colorDart.VermelhoPadrao, // Cor do texto
+                                elevation: 5, // Sombra
+                                shape: RoundedRectangleBorder(
+                                  // Forma do botão
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              child: const Text(
+                                'RECICLAGEM',
+                                style: TextStyle(fontSize: 26),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -399,18 +458,12 @@ class _HomescreenState extends State<Homescreen> {
 
 class Sessao extends StatelessWidget {
   Color corfundo;
-  String titulo;
   String image;
-  final VoidCallback
-      onPressed; // Função callback para quando o botão for pressionado
-
   Sessao({
-    Key? key,
+    super.key,
     required this.corfundo,
-    required this.titulo,
     required this.image,
-    required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -420,12 +473,7 @@ class Sessao extends StatelessWidget {
       children: [
         Container(
           alignment: Alignment.center,
-          padding: EdgeInsets.all(2),
-
-          // width:
-          //     MediaQuery.of(context).size.width * 0.2, // Largura do Container
-          // height:
-          //     MediaQuery.of(context).size.height * 0.3, // Altura do Container
+          padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
             color: corfundo,
             shape: BoxShape.circle, // Forma circular
@@ -434,61 +482,38 @@ class Sessao extends StatelessWidget {
               width: 1, // Largura da borda externa
             ),
           ),
-          child: GestureDetector(
-            onTap: onPressed,
-            child: Container(
-              padding: EdgeInsets.all(15),
-              width: MediaQuery.of(context).size.width *
-                  0.29, // Largura interna (menor que a externa)
-              height: MediaQuery.of(context).size.width *
-                  0.29, // Altura interna (menor que a externa)
-              decoration: BoxDecoration(
-                color: corfundo,
-                shape: BoxShape.circle, // Forma circular
-                border: Border.all(
-                  color: Colors.white, // Cor da borda interna
-                  width: 1, // Largura da borda interna
-                ),
+          child: Container(
+            padding: const EdgeInsets.all(15),
+            width: MediaQuery.of(context).size.width *
+                0.25, // Largura interna (menor que a externa)
+            height: MediaQuery.of(context).size.width *
+                0.25, // Altura interna (menor que a externa)
+            decoration: BoxDecoration(
+              color: corfundo,
+              shape: BoxShape.circle, // Forma circular
+              border: Border.all(
+                color: Colors.white, // Cor da borda interna
+                width: 1, // Largura da borda interna
               ),
-              child: Padding(
-                padding: image == 'assets/icon_tarefasgerais.png'
-                    ? EdgeInsets.only(left: 10)
-                    : EdgeInsets.only(left: 0),
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  alignment: Alignment.center,
-                  child: ColorFiltered(
-                      colorFilter:
-                          ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                      child: Image.asset(
-                        image,
-                      )),
-                ),
+            ),
+            child: Padding(
+              padding: image == 'assets/icon_tarefasgerais.png'
+                  ? const EdgeInsets.only(left: 10)
+                  : const EdgeInsets.only(left: 0),
+              child: Container(
+                width: 20,
+                height: 20,
+                alignment: Alignment.center,
+                child: ColorFiltered(
+                    colorFilter:
+                        const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    child: Image.asset(
+                      image,
+                    )),
               ),
             ),
           ),
         ),
-        SizedBox(
-          height: 5,
-        ),
-        Container(
-          width: 130,
-          height: 50,
-          color: Colors.transparent,
-          child: Text(
-            titulo,
-            style:
-                TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
-            textAlign: TextAlign.center,
-          ),
-        ),
-
-        // Container(
-        //   color: corfundo,
-        //   height: 100,
-        //   width: 100,
-        // ),
       ],
     );
   }

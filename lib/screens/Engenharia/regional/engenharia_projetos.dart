@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:senai_f1/screens/Engenharia/engenharia_grid_garrafas5.dart';
-
+import 'package:flutter/services.dart';
+import 'package:senai_f1/screens/Engenharia/regional/engenharia_grid_garrafas5.dart';
+import 'package:senai_f1/screens/Reciclagem/reciclagem_engenharia.dart';
+import 'package:senai_f1/screens/Tijolo/tijolo_engenharia.dart';
+import 'package:senai_f1/screens/sessao_das_areas/HomeScreen.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
-import 'package:senai_f1/screens/GestaoProjeto/gestao_grid_garrafas5.dart';
+import 'package:senai_f1/widgets/customDrawer.dart';
 //import 'package:awesome_dialog/awesome_dialog.dart';
 
 class EngenhariaProjetos extends StatelessWidget {
   // ServiceGestao service = ServiceGestao();
 
-  EngenhariaProjetos({super.key});
+  EngenhariaProjetos({super.key, required String campeonato});
   AuthService serviceAuth = AuthService();
   ColorsDart colorDart = ColorsDart();
 // Função que exibe o AlertDialog
@@ -65,7 +68,7 @@ class EngenhariaProjetos extends StatelessWidget {
                       const SizedBox(
                         width: 20,
                       ),
-                      Text('TAREFA TERMINANDO',
+                      const Text('TAREFA TERMINANDO',
                           style:
                               TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                     ],
@@ -74,7 +77,7 @@ class EngenhariaProjetos extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                Container(
+                SizedBox(
                   width: 350,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -82,12 +85,12 @@ class EngenhariaProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: Color.fromRGBO(45, 46, 45, 1),
+                        color: const Color.fromRGBO(45, 46, 45, 1),
                       ),
                       const SizedBox(
                         width: 20,
                       ),
-                      Text('TAREFA FINALIZADA',
+                      const Text('TAREFA FINALIZADA',
                           style:
                               TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                     ],
@@ -96,7 +99,7 @@ class EngenhariaProjetos extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                Container(
+                SizedBox(
                   width: 350,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -104,18 +107,18 @@ class EngenhariaProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: Color.fromRGBO(14, 82, 23, 1),
+                        color: const Color.fromRGBO(14, 82, 23, 1),
                       ),
                       const SizedBox(
                         width: 20,
                       ),
-                      Text('TAREFA EM ANDAMENTO',
+                      const Text('TAREFA EM ANDAMENTO',
                           style:
                               TextStyle(fontFamily: 'Poppins', fontSize: 11)),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
@@ -124,13 +127,14 @@ class EngenhariaProjetos extends StatelessWidget {
                       borderRadius: BorderRadius.circular(
                           4), // Bordas arredondadas com 4 de raio
                     ),
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 8), // Padding opcional
                   ),
                   onPressed: () {
+                    HapticFeedback.lightImpact(); // Vibração leve
                     Navigator.of(context).pop(); // Fecha o dialog
                   },
-                  child: Text(
+                  child: const Text(
                     'Fechar',
                     style: TextStyle(color: Colors.white),
                   ),
@@ -152,10 +156,11 @@ class EngenhariaProjetos extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colorDart.FundoApp,
+      drawer: CustomDrawer(),
       body: Padding(
         padding: const EdgeInsets.only(top: 32, bottom: 0, left: 8, right: 8),
         child: Center(
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -179,7 +184,7 @@ class EngenhariaProjetos extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              print('voltar');
+                              HapticFeedback.lightImpact(); // Vibração leve
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -191,7 +196,7 @@ class EngenhariaProjetos extends StatelessWidget {
                               ),
                               child: const Center(
                                 child: Icon(
-                                  Icons.house, // Ícone de casa
+                                  Icons.arrow_back, // Ícone de casa
                                   color: Colors.white, // Cor do ícone
                                   size: 25, // Tamanho do ícone
                                 ),
@@ -212,8 +217,12 @@ class EngenhariaProjetos extends StatelessWidget {
                           ),
                           GestureDetector(
                             onTap: () {
-                              serviceAuth.signOut();
-                              Navigator.pushReplacementNamed(context, '/login');
+                              HapticFeedback.lightImpact(); // Vibração leve
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Homescreen(),
+                                  ));
                             },
                             child: Container(
                               width: 40, // Largura da bola
@@ -226,7 +235,7 @@ class EngenhariaProjetos extends StatelessWidget {
                                 padding: EdgeInsets.only(
                                     bottom: 0, left: 0, right: 0),
                                 child: Icon(
-                                  Icons.person,
+                                  Icons.house,
                                   color: Colors.white,
                                 ),
                               ),
@@ -311,6 +320,7 @@ class EngenhariaProjetos extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
+                                  HapticFeedback.lightImpact(); // Vibração leve
                                   _showDialog(context);
                                 },
                                 child: Container(
@@ -355,38 +365,58 @@ class EngenhariaProjetos extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: 35,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.black, width: 1),
-                            borderRadius: BorderRadius.circular(4)),
-                        child: const Text(
-                          'Reciclagem',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold),
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.lightImpact(); // Vibração leve
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReciclagemEngenharia(),
+                              ));
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.black, width: 1),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: const Text(
+                            'Reciclagem',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
-                      Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: 35,
-                        decoration: BoxDecoration(
-                            color: colorDart.VermelhoPadrao,
-                            border: Border.all(color: Colors.black, width: 1),
-                            borderRadius: BorderRadius.circular(4)),
-                        child: const Text(
-                          'Tijolo',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TijoloEngenharia(),
+                              ));
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              color: colorDart.VermelhoPadrao,
+                              border: Border.all(color: Colors.black, width: 1),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: const Text(
+                            'Tijolo',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
                         ),
                       ),
                     ],

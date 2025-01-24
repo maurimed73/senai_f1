@@ -1,14 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:provider/provider.dart';
-
 import 'package:senai_f1/models/projeto_model.dart';
-import 'package:senai_f1/provider/provider_main.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
 
@@ -22,6 +19,7 @@ class GestaoDetailPage extends StatefulWidget {
 
 class _GestaoDetailPageState extends State<GestaoDetailPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  bool terminando = false;
   @override
   void initState() {
     print(widget.projeto);
@@ -62,6 +60,9 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
           // Caso contrário, mostra a contagem regressiva
           countdown = "${difference.inDays + 1} dias restantes";
           widget.projeto!.status = Status.ATIVO;
+          if (difference.inDays + 1 < 4) {
+            terminando = true;
+          }
         }
       });
     }
@@ -97,7 +98,11 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
       );
 
       // Retorna a diferença em dias
-      return diferenca.inDays;
+      if (diferenca.inDays == 0) {
+        return diferenca.inDays + 1;
+      } else {
+        return diferenca.inDays;
+      }
     } else {
       diasIcon = const Icon(
         Icons.timer_sharp,
@@ -172,16 +177,6 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    // print('id ${widget.projeto!.id}');
-    //   print('nome: ${widget.projeto!.nome}');
-    //   print('data entrega ${widget.projeto!.dataEntrega}');
-    //   print('data inicial ${widget.projeto!.dataInicial}');
-    //   print('descrição ${widget.projeto!.descricao}');
-    //   print('inicio estimado ${widget.projeto!.inicioEstimado}');
-    //   print('responsável ${widget.projeto!.responsavelTarefa}');
-    //   print('situação ${widget.projeto!.status}');
-    //   print('término Estimado ${widget.projeto!.terminoEstimado}');
-
     double alturaTela = MediaQuery.of(context).size.height;
 
     //INÍCIO
@@ -215,6 +210,7 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                         children: [
                           GestureDetector(
                             onTap: () {
+                              HapticFeedback.lightImpact();
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -246,7 +242,9 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                            },
                             child: Container(
                               width: 40, // Largura da bola
                               height: 35, // Altura da bola
@@ -295,7 +293,14 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                                       0.24),
                                   color: Colors.transparent,
                                   child: Image.asset(
-                                    'assets/garrafa_tarefa.png',
+                                    widget.projeto!.status == Status.ATRASADA
+                                        ? 'assets/garrafa_atrasada.png'
+                                        : widget.projeto!.status ==
+                                                Status.TERMINADA
+                                            ? 'assets/garrafa_finalizada.png'
+                                            : terminando
+                                                ? 'assets/garrafa_terminando.png'
+                                                : 'assets/garrafa_andamento.png',
                                     fit: BoxFit.contain,
                                   ),
                                 ),
@@ -359,449 +364,6 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                                   ),
                                 ),
                               ),
-
-                              // Container(
-                              //   height: 150,
-                              //   width: 150,
-                              //   // child:
-                              //   // Row(
-                              //   //   children: [
-                              //   //     Padding(
-                              //   //       padding: const EdgeInsets.only(bottom: 2),
-                              //   //       child: Container(
-                              //   //         height: 20,
-                              //   //         width: double.infinity,
-                              //   //         child: Row(
-                              //   //           crossAxisAlignment:
-                              //   //               CrossAxisAlignment.start,
-                              //   //           mainAxisAlignment:
-                              //   //               MainAxisAlignment.spaceBetween,
-                              //   //           children: [
-                              //   //             Container(
-                              //   //               width: widthConst,
-                              //   //               alignment: Alignment.centerRight,
-                              //   //               child: const Text(
-                              //   //                 'Início estimado: ',
-                              //   //                 style: TextStyle(
-                              //   //                     fontSize: 10,
-                              //   //                     color: Colors.black87),
-                              //   //               ),
-                              //   //             ),
-                              //   //             Card(
-                              //   //               shape: RoundedRectangleBorder(
-                              //   //                 borderRadius: BorderRadius.circular(
-                              //   //                     2), // Diminui o borderRadius para 8
-                              //   //               ),
-                              //   //               margin: EdgeInsets.all(0),
-                              //   //               child: Container(
-                              //   //                 alignment: Alignment.center,
-                              //   //                 width: widthVar,
-                              //   //                 child: Text(
-                              //   //                   '${projetoModel.inicioEstimado}',
-                              //   //                   style:
-                              //   //                       TextStyle(fontSize: 10),
-                              //   //                   textAlign: TextAlign.center,
-                              //   //                 ),
-                              //   //               ),
-                              //   //             ),
-                              //   //             Padding(
-                              //   //               padding: const EdgeInsets.only(
-                              //   //                   bottom: 15),
-                              //   //               child: Container(
-                              //   //                 width: 10,
-                              //   //                 height: 10,
-                              //   //                 color: Colors.transparent,
-                              //   //                 child: const Icon(
-                              //   //                   Icons.check,
-                              //   //                   size: 20,
-                              //   //                   color: Color.fromARGB(
-                              //   //                       255, 107, 209, 5),
-                              //   //                 ),
-                              //   //               ),
-                              //   //             )
-                              //   //           ],
-                              //   //         ),
-                              //   //       ),
-                              //   //     ),
-                              //   //     // ************************************* INICIO REALIZADO  *************************************************
-                              //   //     Padding(
-                              //   //       padding: const EdgeInsets.only(bottom: 2),
-                              //   //       child: Container(
-                              //   //         height: 20,
-                              //   //         child: Row(
-                              //   //           mainAxisAlignment:
-                              //   //               MainAxisAlignment.spaceBetween,
-                              //   //           children: [
-                              //   //             Container(
-                              //   //               width: widthConst,
-                              //   //               alignment: Alignment.centerRight,
-                              //   //               child: const Text(
-                              //   //                 'Início realizado: ',
-                              //   //                 style: TextStyle(
-                              //   //                     fontSize: 10,
-                              //   //                     color: Colors.black87),
-                              //   //               ),
-                              //   //             ),
-                              //   //             GestureDetector(
-                              //   //               onTap: () async {
-                              //   //                 // _showDialog(
-                              //   //                 //     context, 'Início da Tarefa');
-                              //   //                 // _openDialog2(
-                              //   //                 //     context, "Início Realizado");
-                              //   //                 resultInicioRealizado =
-                              //   //                     await _openDialog(context,
-                              //   //                         "Inicio Realizado");
-
-                              //   //                 if (resultInicioRealizado !=
-                              //   //                     null) {
-                              //   //                   projetoModel.dataInicial =
-                              //   //                       resultInicioRealizado!;
-                              //   //                 }
-                              //   //               },
-                              //   //               child: Card(
-                              //   //                 shape: RoundedRectangleBorder(
-                              //   //                   borderRadius:
-                              //   //                       BorderRadius.circular(
-                              //   //                           2), // Diminui o borderRadius para 8
-                              //   //                 ),
-                              //   //                 margin: const EdgeInsets.all(0),
-                              //   //                 child: Container(
-                              //   //                   alignment: Alignment.center,
-                              //   //                   width: widthVar,
-                              //   //                   child: Text(
-                              //   //                     projetoModel
-                              //   //                             .dataInicial.isEmpty
-                              //   //                         ? ''
-                              //   //                         : '${projetoModel.dataInicial}',
-                              //   //                     style: const TextStyle(
-                              //   //                         fontSize: 10),
-                              //   //                   ),
-                              //   //                 ),
-                              //   //               ),
-                              //   //             ),
-                              //   //             GestureDetector(
-                              //   //               onTap: () async {
-                              //   //                 // _showDialog(
-                              //   //                 //     context, 'Início da Tarefa');
-                              //   //                 // _openDialog2(
-                              //   //                 //     context, "Início Realizado");
-                              //   //                 resultInicioRealizado =
-                              //   //                     await _openDialog(context,
-                              //   //                         "Inicio Realizado");
-
-                              //   //                 if (resultInicioRealizado !=
-                              //   //                     null) {
-                              //   //                   projetoModel.dataInicial =
-                              //   //                       resultInicioRealizado!;
-                              //   //                 }
-                              //   //               },
-                              //   //               child: Padding(
-                              //   //                 padding:
-                              //   //                     EdgeInsets.only(bottom: 10),
-                              //   //                 child: Container(
-                              //   //                   width: 10,
-                              //   //                   height: 10,
-                              //   //                   color: Colors.transparent,
-                              //   //                   child: Icon(
-                              //   //                     Icons.edit,
-                              //   //                     color: projetoModel
-                              //   //                                 .dataInicial ==
-                              //   //                             ""
-                              //   //                         ? Colors.red
-                              //   //                         : Colors.black,
-                              //   //                     size: 15,
-                              //   //                   ),
-                              //   //                 ),
-                              //   //               ),
-                              //   //             )
-                              //   //           ],
-                              //   //         ),
-                              //   //       ),
-                              //   //     ),
-                              //   //     // ************************************* TÉRMINO ESTIMADO  *************************************************
-                              //   //     Padding(
-                              //   //       padding: const EdgeInsets.only(bottom: 2),
-                              //   //       child: Container(
-                              //   //         height: 20,
-                              //   //         child: Row(
-                              //   //           mainAxisAlignment:
-                              //   //               MainAxisAlignment.spaceBetween,
-                              //   //           children: [
-                              //   //             Container(
-                              //   //               width: widthConst,
-                              //   //               alignment: Alignment.centerRight,
-                              //   //               child: const Text(
-                              //   //                 'Término estimado: ',
-                              //   //                 style: TextStyle(
-                              //   //                     fontSize: 10,
-                              //   //                     color: Colors.black87),
-                              //   //               ),
-                              //   //             ),
-                              //   //             Card(
-                              //   //               shape: RoundedRectangleBorder(
-                              //   //                 borderRadius: BorderRadius.circular(
-                              //   //                     2), // Diminui o borderRadius para 8
-                              //   //               ),
-                              //   //               margin: EdgeInsets.all(0),
-                              //   //               child: Container(
-                              //   //                 alignment: Alignment.center,
-                              //   //                 width: widthVar,
-                              //   //                 child: Text(
-                              //   //                   '${projetoModel.terminoEstimado}',
-                              //   //                   style:
-                              //   //                       TextStyle(fontSize: 10),
-                              //   //                   textAlign: TextAlign.center,
-                              //   //                 ),
-                              //   //               ),
-                              //   //             ),
-                              //   //             Padding(
-                              //   //               padding: const EdgeInsets.only(
-                              //   //                   bottom: 15),
-                              //   //               child: Container(
-                              //   //                 width: 10,
-                              //   //                 height: 10,
-                              //   //                 color: Colors.transparent,
-                              //   //                 child: const Icon(
-                              //   //                   Icons.check,
-                              //   //                   size: 20,
-                              //   //                   color: Color.fromARGB(
-                              //   //                       255, 107, 209, 5),
-                              //   //                 ),
-                              //   //               ),
-                              //   //             )
-                              //   //           ],
-                              //   //         ),
-                              //   //       ),
-                              //   //     ),
-                              //   //     // ************************************* TÉRMINO REALIZADO  *************************************************
-                              //   //     Padding(
-                              //   //       padding: const EdgeInsets.only(bottom: 2),
-                              //   //       child: Container(
-                              //   //         height: 20,
-                              //   //         child: Row(
-                              //   //           mainAxisAlignment:
-                              //   //               MainAxisAlignment.spaceBetween,
-                              //   //           children: [
-                              //   //             Container(
-                              //   //               width: widthConst,
-                              //   //               alignment: Alignment.centerRight,
-                              //   //               child: const Text(
-                              //   //                 'Término realizado: ',
-                              //   //                 style: TextStyle(
-                              //   //                     fontSize: 10,
-                              //   //                     color: Colors.black87),
-                              //   //               ),
-                              //   //             ),
-                              //   //             Card(
-                              //   //               shape: RoundedRectangleBorder(
-                              //   //                 borderRadius: BorderRadius.circular(
-                              //   //                     2), // Diminui o borderRadius para 8
-                              //   //               ),
-                              //   //               margin: const EdgeInsets.all(0),
-                              //   //               child: Container(
-                              //   //                 alignment: Alignment.center,
-                              //   //                 width: widthVar,
-                              //   //                 child: Text(
-                              //   //                   projetoModel
-                              //   //                           .dataEntrega.isEmpty
-                              //   //                       ? ''
-                              //   //                       : '${projetoModel.dataEntrega}',
-                              //   //                   style: const TextStyle(
-                              //   //                       fontSize: 10),
-                              //   //                 ),
-                              //   //               ),
-                              //   //             ),
-                              //   //             GestureDetector(
-                              //   //               onTap: () async {
-                              //   //                 // _showDialog(
-                              //   //                 //     context, 'Início da Tarefa');
-                              //   //                 // _openDialog2(
-                              //   //                 //     context, "Início Realizado");
-                              //   //                 resultTerminoRealizado =
-                              //   //                     (await _openDialog(context,
-                              //   //                         "Término Realizado"));
-
-                              //   //                 if (resultTerminoRealizado !=
-                              //   //                     null) {
-                              //   //                   projetoModel.dataEntrega =
-                              //   //                       resultTerminoRealizado!;
-                              //   //                 }
-                              //   //               },
-                              //   //               child: Padding(
-                              //   //                 padding:
-                              //   //                     EdgeInsets.only(bottom: 10),
-                              //   //                 child: Container(
-                              //   //                   width: 10,
-                              //   //                   height: 10,
-                              //   //                   color: Colors.transparent,
-                              //   //                   child: Icon(
-                              //   //                     Icons.edit,
-                              //   //                     color:
-                              //   //                         resultTerminoRealizado ==
-                              //   //                                 ""
-                              //   //                             ? Colors.red
-                              //   //                             : Colors.green,
-                              //   //                     size: 15,
-                              //   //                   ),
-                              //   //                 ),
-                              //   //               ),
-                              //   //             )
-                              //   //           ],
-                              //   //         ),
-                              //   //       ),
-                              //   //     ),
-                              //   //     // ************************************* DURAÇÃO EM DIAS  *************************************************
-                              //   //     Padding(
-                              //   //       padding: const EdgeInsets.only(bottom: 2),
-                              //   //       child: Container(
-                              //   //         height: 20,
-                              //   //         child: Row(
-                              //   //           mainAxisAlignment:
-                              //   //               MainAxisAlignment.spaceBetween,
-                              //   //           children: [
-                              //   //             Container(
-                              //   //               width: widthConst,
-                              //   //               alignment: Alignment.centerRight,
-                              //   //               child: const Text(
-                              //   //                 'Duração em Dias: ',
-                              //   //                 style: TextStyle(
-                              //   //                     fontSize: 10,
-                              //   //                     color: Colors.black87),
-                              //   //               ),
-                              //   //             ),
-                              //   //             Card(
-                              //   //               shape: RoundedRectangleBorder(
-                              //   //                 borderRadius: BorderRadius.circular(
-                              //   //                     2), // Diminui o borderRadius para 8
-                              //   //               ),
-                              //   //               margin: EdgeInsets.all(0),
-                              //   //               child: Container(
-                              //   //                 alignment: Alignment.center,
-                              //   //                 width: widthVar,
-                              // child: Text(
-                              //   calcularDiferencaEmDias(
-                              //               projetoModel
-                              //                   .dataInicial,
-                              //               projetoModel
-                              //                   .dataEntrega) !=
-                              //           0
-                              //       ? "${calcularDiferencaEmDias(projetoModel.dataInicial, projetoModel.dataEntrega)}"
-                              //       : "s/efeito",
-                              //   style:
-                              //       TextStyle(fontSize: 10),
-                              // ),
-                              //   //               ),
-                              //   //             ),
-                              //   //             Padding(
-                              //   //               padding: const EdgeInsets.only(
-                              //   //                   bottom: 15),
-                              //   //               child: Container(
-                              //   //                 width: 10,
-                              //   //                 height: 10,
-                              //   //                 color: Colors.transparent,
-                              //   //                 child: const Icon(
-                              //   //                   Icons.timer_sharp,
-                              //   //                   size: 15,
-                              //   //                 ),
-                              //   //               ),
-                              //   //             )
-                              //   //           ],
-                              //   //         ),
-                              //   //       ),
-                              //   //     ),
-                              //   //     // ************************************* RESPONSÁVEL  *************************************************
-                              //   //     Padding(
-                              //   //       padding: const EdgeInsets.only(bottom: 2),
-                              //   //       child: Container(
-                              //   //         height: 20,
-                              //   //         child: Row(
-                              //   //           mainAxisAlignment:
-                              //   //               MainAxisAlignment.spaceBetween,
-                              //   //           children: [
-                              //   //             Container(
-                              //   //               width: widthConst,
-                              //   //               alignment: Alignment.centerRight,
-                              //   //               child: const Text(
-                              //   //                 'Responsável: ',
-                              //   //                 style: TextStyle(
-                              //   //                     fontSize: 10,
-                              //   //                     color: Colors.black87),
-                              //   //               ),
-                              //   //             ),
-                              //   //             Card(
-                              //   //               shape: RoundedRectangleBorder(
-                              //   //                 borderRadius: BorderRadius.circular(
-                              //   //                     2), // Diminui o borderRadius para 8
-                              //   //               ),
-                              //   //               margin: const EdgeInsets.all(0),
-                              //   //               child: Container(
-                              //   //                 alignment: Alignment.center,
-                              //   //                 width: widthVar,
-                              //   //                 child: Text(
-                              //   projetoModel.responsavelTarefa
-                              //           .isEmpty
-                              //       ? ''
-                              //       : '${projetoModel.responsavelTarefa}',
-                              //   overflow:
-                              //       TextOverflow.ellipsis,
-                              //   style: const TextStyle(
-                              //       fontSize: 8),
-                              // ),
-                              //   //               ),
-                              //   //             ),
-                              //   //             GestureDetector(
-                              //   //               onTap: () async {
-                              //   //                 // _showDialog(
-                              //   //                 //     context, 'Início da Tarefa');
-                              //   //                 // _openDialog2(
-                              //   //                 //     context, "Início Realizado");
-                              //   //                 resultResponsavel =
-                              //   //                     (await _openDialog(context,
-                              //   //                         "Responsável"));
-
-                              //   //                 if (resultResponsavel != null) {
-                              //   //                   projetoModel
-                              //   //                           .responsavelTarefa =
-                              //   //                       resultResponsavel!;
-                              //   //                 }
-                              //   //                 print(
-                              //   //                     'Início Estimado: ${projetoModel.inicioEstimado}');
-                              //   //                 print(
-                              //   //                     'Início Data Inicial: ${projetoModel.dataInicial}');
-                              //   //                 print(
-                              //   //                     'Início Termino Estimado: ${projetoModel.terminoEstimado}');
-                              //   //                 print(
-                              //   //                     'Início Data Entrega: ${projetoModel.dataEntrega}');
-                              //   //                 print(
-                              //   //                     'Início id: ${projetoModel.id}');
-                              //   //                 print(
-                              //   //                     'Início Responsavel Tarefa: ${projetoModel.responsavelTarefa}');
-                              //   //               },
-                              //   //               child: Padding(
-                              //   //                 padding:
-                              //   //                     EdgeInsets.only(bottom: 10),
-                              //   //                 child: Container(
-                              //   //                   width: 10,
-                              //   //                   height: 10,
-                              //   //                   color: Colors.transparent,
-                              //   //                   child: Icon(
-                              //   //                     Icons.edit,
-                              //   //                     color:
-                              //   //                         resultResponsavel == ""
-                              //   //                             ? Colors.red
-                              //   //                             : Colors.green,
-                              //   //                     size: 15,
-                              //   //                   ),
-                              //   //                 ),
-                              //   //               ),
-                              //   //             )
-                              //   //           ],
-                              //   //         ),
-                              //   //       ),
-                              //   //     )
-                              //   //   ],
-                              //   // ),
-                              // ),
                             ],
                           ),
                           // TERCEIRO ELEMENTO -> DADOS DA TAREFA
@@ -1379,6 +941,7 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                         borderRadius: BorderRadius.circular(4)),
                     child: TextButton(
                       onPressed: () {
+                        HapticFeedback.lightImpact();
                         if (widget.projeto!.dataInicial != "" &&
                             widget.projeto!.dataEntrega != "" &&
                             widget.projeto!.responsavelTarefa != "") {

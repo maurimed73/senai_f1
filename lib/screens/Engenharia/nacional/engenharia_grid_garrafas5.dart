@@ -6,15 +6,16 @@ import 'package:provider/provider.dart';
 import 'package:senai_f1/models/projeto_model.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:senai_f1/provider/provider_main.dart';
-import 'package:senai_f1/screens/TarefasGerais/tarefas_Gerais_tarefa.dart';
+import 'package:senai_f1/screens/Engenharia/regional/engenharia_tarefa.dart';
 import 'package:senai_f1/utils/colors.dart';
 
-class GarrafasTarefasGerais extends StatefulWidget {
+class GarrafasEngenharia extends StatefulWidget {
+  GarrafasEngenharia({super.key});
   @override
-  State<GarrafasTarefasGerais> createState() => _GarrafasTarefasGeraisState();
+  State<GarrafasEngenharia> createState() => _GarrafasEngenhariaState();
 }
 
-class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
+class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
   ColorsDart colorsDart = ColorsDart();
   final _formKey = GlobalKey<FormState>();
   List<Widget> originalList = [];
@@ -74,7 +75,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
     List<ProjetoModel> temp = [];
     print('*******************************  COMEÇOU');
     QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore.collection("TarefasTarefasGerais").get();
+        await firestore.collection("TarefasEngenharia").get();
     for (var doc in snapshot.docs) {
       temp.add(ProjetoModel.fromMap(doc.data()));
       print(doc.data());
@@ -132,7 +133,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
                           try {
                             // Referência do Firestore para o documento que você quer deletar
                             await FirebaseFirestore.instance
-                                .collection('TarefasTarefasGerais')
+                                .collection('TarefasEngenharia')
                                 .doc(projeto.id.toString())
                                 .delete();
                             print('Documento deletado com sucesso');
@@ -159,12 +160,11 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
               final retorno = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TarefasGeraisDetailPage(
+                    builder: (context) => EngenhariaDetailPage(
                       projeto: projeto,
                     ),
                   )).then(
                 (value) {
-                  print('Voltou');
                   refresh();
                 },
               );
@@ -534,7 +534,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
 
                             // mandar para o banco
                             firestore
-                                .collection('TarefasTarefasGerais')
+                                .collection('TarefasEngenharia')
                                 .doc((addTarefa.id).toString())
                                 .set(addTarefa.toMap());
 
@@ -657,20 +657,19 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
 // import 'package:senai_f1/models/projeto_model.dart';
 // import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 // import 'package:senai_f1/provider/provider_main.dart';
-// import 'package:senai_f1/screens/GestaoProjeto/gestao_tarefa.dart';
-// import 'package:senai_f1/screens/TarefasGerais/tarefas_Gerais_tarefa.dart';
+// import 'package:senai_f1/screens/Engenharia/engenharia_tarefa.dart';
 // import 'package:senai_f1/utils/colors.dart';
 
-// class GarrafasTarefasGerais extends StatefulWidget {
+// class GarrafasEngenharia extends StatefulWidget {
 //   @override
-//   State<GarrafasTarefasGerais> createState() => _GarrafasTarefasGeraisState();
+//   State<GarrafasEngenharia> createState() => _GarrafasEngenhariaState();
 // }
 
-// class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
+// class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
 //   ColorsDart colorsDart = ColorsDart();
 //   final _formKey = GlobalKey<FormState>();
 //   List<Widget> originalList = [];
-//   List<ProjetoModel> projetosTarefasGerais = [];
+//   List<ProjetoModel> projetosEngenharia = [];
 //   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 //   @override
@@ -709,7 +708,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
 
 //     // salvar no firestore
 //     firestore
-//         .collection('TarefasTarefasGerais')
+//         .collection('TarefasEngenharia')
 //         .doc(projetoVindoDoDialog!.id.toString())
 //         .set(projetoVindoDoDialog.toMap());
 
@@ -721,7 +720,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
 //       originalList.removeRange(1, originalList.length);
 //     }
 
-//     projetosTarefasGerais.forEach(
+//     projetosEngenharia.forEach(
 //       (projeto) {
 //         originalList.add(
 //           GestureDetector(
@@ -730,7 +729,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
 //               Navigator.push(
 //                   context,
 //                   MaterialPageRoute(
-//                     builder: (context) => GestaoDetailPage(
+//                     builder: (context) => EngenhariaDetailPage(
 //                       projeto: projeto,
 //                     ),
 //                   ));
@@ -783,7 +782,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
 //     List<ProjetoModel> temp = [];
 //     print('*******************************  COMEÇOU');
 //     QuerySnapshot<Map<String, dynamic>> snapshot =
-//         await firestore.collection("TarefasTarefasGerais").get();
+//         await firestore.collection("TarefasEngenharia").get();
 //     for (var doc in snapshot.docs) {
 //       temp.add(ProjetoModel.fromMap(doc.data()));
 //       print(doc.data());
@@ -822,7 +821,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
 //               Navigator.push(
 //                   context,
 //                   MaterialPageRoute(
-//                     builder: (context) => TarefasGeraisDetailPage(
+//                     builder: (context) => EngenhariaDetailPage(
 //                       projeto: projeto,
 //                     ),
 //                   ));
@@ -1191,7 +1190,7 @@ class _GarrafasTarefasGeraisState extends State<GarrafasTarefasGerais> {
 
 //                             // mandar para o banco
 //                             firestore
-//                                 .collection('TarefasTarefasGerais')
+//                                 .collection('TarefasEngenharia')
 //                                 .doc((addTarefa.id).toString())
 //                                 .set(addTarefa.toMap());
 
