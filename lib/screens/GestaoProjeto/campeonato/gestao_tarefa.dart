@@ -5,24 +5,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:provider/provider.dart';
 import 'package:senai_f1/models/projeto_model.dart';
+import 'package:senai_f1/provider/provider_main.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
 
-class EngenhariaDetailPage extends StatefulWidget {
+class GestaoDetailPage extends StatefulWidget {
   ProjetoModel? projeto;
-  EngenhariaDetailPage({super.key, this.projeto});
+  GestaoDetailPage({super.key, this.projeto});
 
   @override
-  State<EngenhariaDetailPage> createState() => _EngenhariaDetailPageState();
+  State<GestaoDetailPage> createState() => _GestaoDetailPageState();
 }
 
-class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
+class _GestaoDetailPageState extends State<GestaoDetailPage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   bool terminando = false;
+  String campeonato = "";
   @override
   void initState() {
-    print(widget.projeto);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      campeonato = Provider.of<MainModel>(context, listen: false).campeonato;
+    });
+
     calcularDiferencaEmDias("", "");
     updateCountdown(); // Atualiza a contagem regressiva na inicialização
     // timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -40,7 +46,7 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
     if (widget.projeto!.status == Status.TERMINADA) {
       print('**********************************************Deu certo');
       firestore
-          .collection('TarefasEngenharia')
+          .collection('TarefasGestao${campeonato}')
           .doc((widget.projeto!.id).toString())
           .update({'status': 'TERMINADA'});
       setState(() {
@@ -53,7 +59,7 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
           countdown = "Atrasado ${difference.inDays.abs()} dias";
           var status = Status.ATRASADA;
           firestore
-              .collection('TarefasEngenharia')
+              .collection('TarefasGestao${campeonato}')
               .doc((widget.projeto!.id).toString())
               .update({'status': status.toString().split('.').last});
         } else {
@@ -613,7 +619,8 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
                                             widget.projeto!.dataInicial =
                                                 resultInicioRealizado!;
                                             firestore
-                                                .collection('TarefasEngenharia')
+                                                .collection(
+                                                    'TarefasGestao${campeonato}')
                                                 .doc((widget.projeto!.id)
                                                     .toString())
                                                 .update({
@@ -697,7 +704,8 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
                                             widget.projeto!.dataEntrega =
                                                 resultTerminoRealizado!;
                                             firestore
-                                                .collection('TarefasEngenharia')
+                                                .collection(
+                                                    'TarefasGestao${campeonato}')
                                                 .doc((widget.projeto!.id)
                                                     .toString())
                                                 .update({
@@ -828,7 +836,8 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
                                             widget.projeto!.responsavelTarefa =
                                                 resultResponsavel!;
                                             firestore
-                                                .collection('TarefasEngenharia')
+                                                .collection(
+                                                    'TarefasGestao${campeonato}')
                                                 .doc((widget.projeto!.id)
                                                     .toString())
                                                 .update({
@@ -951,7 +960,7 @@ class _EngenhariaDetailPageState extends State<EngenhariaDetailPage> {
 
                           Status status = Status.TERMINADA;
                           firestore
-                              .collection('TarefasEngenharia')
+                              .collection('TarefasGestao${campeonato}')
                               .doc((widget.projeto!.id).toString())
                               .update({
                             'status': status.toString().split('.').last

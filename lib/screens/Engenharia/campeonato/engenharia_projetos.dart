@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:senai_f1/screens/Engenharia/regional/engenharia_grid_garrafas5.dart';
-import 'package:senai_f1/screens/Reciclagem/reciclagem_engenharia.dart';
-import 'package:senai_f1/screens/Tijolo/tijolo_engenharia.dart';
+import 'package:provider/provider.dart';
+import 'package:senai_f1/provider/provider_main.dart';
+import 'package:senai_f1/screens/Engenharia/campeonato/engenharia_grid_garrafas5.dart';
+import 'package:senai_f1/screens/Reciclagem/campeonatos/reciclagem_mundial.dart';
+import 'package:senai_f1/screens/Reciclagem/campeonatos/reciclagem_nacional.dart';
+import 'package:senai_f1/screens/Reciclagem/campeonatos/reciclagem_regional.dart';
+import 'package:senai_f1/screens/Tijolo/tijolo.dart';
 import 'package:senai_f1/screens/sessao_das_areas/HomeScreen.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
@@ -12,12 +16,10 @@ import 'package:senai_f1/widgets/customDrawer.dart';
 class EngenhariaProjetos extends StatelessWidget {
   // ServiceGestao service = ServiceGestao();
 
-  EngenhariaProjetos({super.key, required String campeonato});
+  EngenhariaProjetos({super.key});
   AuthService serviceAuth = AuthService();
   ColorsDart colorDart = ColorsDart();
-// Função que exibe o AlertDialog
 
-  // Função para exibir o Dialog
   void _showDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -149,10 +151,11 @@ class EngenhariaProjetos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Converte o JSON em uma lista de objetos
-    //List<ProjetoModel> projetos = service.parseProjetos();
-
     int totalGarrafas = 700000;
+    print(Provider.of<MainModel>(context, listen: false).campeonato);
+    String campeonato =
+        Provider.of<MainModel>(context, listen: false).campeonato;
+    print('O CAMPEONATO É $campeonato');
 
     return Scaffold(
       backgroundColor: colorDart.FundoApp,
@@ -355,7 +358,9 @@ class EngenhariaProjetos extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Align(
                       alignment: Alignment.centerLeft,
-                      child: GarrafasEngenharia()),
+                      child: GarrafasEngenharia(
+                        campeonato: campeonato,
+                      )),
                 ),
                 Spacer(),
 
@@ -368,11 +373,33 @@ class EngenhariaProjetos extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           HapticFeedback.lightImpact(); // Vibração leve
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ReciclagemEngenharia(),
-                              ));
+                          campeonato == "Regional"
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReciclagemRegional(
+                                      titulo: 'Engenharia',
+                                      banco: "TarefasEngenhariaRegional",
+                                    ),
+                                  ))
+                              : campeonato == "Nacional"
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ReciclagemNacional(
+                                          titulo: 'Engenharia',
+                                          banco: "TarefasEngenhariaNacional",
+                                        ),
+                                      ))
+                                  : Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ReciclagemMundial(
+                                          titulo: 'Engenharia',
+                                          banco: "TarefasEngenhariaMundial",
+                                        ),
+                                      ));
                         },
                         child: Container(
                           alignment: Alignment.center,
@@ -396,10 +423,17 @@ class EngenhariaProjetos extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           HapticFeedback.lightImpact();
+                          String banco =
+                              Provider.of<MainModel>(context, listen: false)
+                                  .area = 'TarefasEngenharia';
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TijoloEngenharia(),
+                                builder: (context) => Tijolo(
+                                  titulo: 'Engenharia',
+                                  banco: banco,
+                                  campeonato: campeonato,
+                                ),
                               ));
                         },
                         child: Container(

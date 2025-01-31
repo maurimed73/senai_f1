@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:senai_f1/models/projeto_model.dart';
+
 
 class MainModel extends ChangeNotifier {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -25,26 +25,19 @@ class MainModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<ProjetoModel> _items = [];
-  bool _isLoading = false;
+  String _campeonato = '';
+  String get campeonato => _campeonato;
 
-  List<ProjetoModel> get items => _items;
-  bool get isLoading => _isLoading;
+  set campeonato(String newValue) {
+    _campeonato = newValue;
+    notifyListeners();
+  }
 
-  // Função para buscar os dados do Firestore
-  Future<void> fetchItems() async {
-    List<ProjetoModel> temp = [];
-    print('*******************************  COMEÇOU');
-    _isLoading = true; // Inicia o carregamento
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore.collection("Tarefas").get();
-    for (var doc in snapshot.docs) {
-      temp.add(ProjetoModel.fromMap(doc.data()));
-      print(doc.data());
-    }
-    print('*******************************  TERMINOU');
-    _isLoading = false; // Fim do carregamento
-    _items = temp;
+  String _area = '';
+  String get area => _area;
+
+  set area(String newValue) {
+    _area = newValue;
     notifyListeners();
   }
 }

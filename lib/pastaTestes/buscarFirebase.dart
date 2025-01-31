@@ -30,13 +30,13 @@ class _BuscarFirebaseState extends State<BuscarFirebase> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Exibir o CircularProgressIndicator enquanto os dados são carregados
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             // Exibir erro, se ocorrer
-            return Center(child: Text("Erro ao buscar dados"));
+            return const Center(child: Text("Erro ao buscar dados"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             // Caso não haja dados
-            return Center(child: Text("Nenhum dado encontrado"));
+            return const Center(child: Text("Nenhum dado encontrado"));
           } else {
             // Exibir os dados quando estiverem carregados
             List<Map<String, dynamic>> items = snapshot.data!;

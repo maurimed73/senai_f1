@@ -6,15 +6,18 @@ import 'package:provider/provider.dart';
 import 'package:senai_f1/models/projeto_model.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:senai_f1/provider/provider_main.dart';
-import 'package:senai_f1/screens/GestaoProjeto/gestao_tarefa.dart';
+import 'package:senai_f1/screens/Empreendimento/campeonato/empreendimento_tarefa.dart';
+
 import 'package:senai_f1/utils/colors.dart';
 
-class GarrafasGestao extends StatefulWidget {
+class GarrafasEmpreendimento extends StatefulWidget {
+  String campeonato;
+  GarrafasEmpreendimento({super.key, required this.campeonato});
   @override
-  State<GarrafasGestao> createState() => _GarrafasGestaoState();
+  State<GarrafasEmpreendimento> createState() => _GarrafasEmpreendimentoState();
 }
 
-class _GarrafasGestaoState extends State<GarrafasGestao> {
+class _GarrafasEmpreendimentoState extends State<GarrafasEmpreendimento> {
   ColorsDart colorsDart = ColorsDart();
   final _formKey = GlobalKey<FormState>();
   List<Widget> originalList = [];
@@ -52,103 +55,6 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
     super.dispose();
   }
 
-  // void novaTarefa(ProjetoModel? projetoVindoDoDialog) {
-  //   if (projetoVindoDoDialog != null) {}
-
-  //   // salvar no firestore
-  //   firestore
-  //       .collection('TarefasGestao')
-  //       .doc(projetoVindoDoDialog!.id.toString())
-  //       .set(projetoVindoDoDialog.toMap());
-
-  //   // List<ProjetoModel> projetos =
-  //   //     Provider.of<MainModel>(context, listen: false).projetos;
-
-  //   // Remover todos os itens após o primeiro (índice 1)
-  //   if (originalList.length > 1) {
-  //     originalList.removeRange(1, originalList.length);
-  //   }
-  //   // Função para converter a string para DateTime
-  //   DateTime parseDate(String dateStr) {
-  //     DateFormat dateFormat = DateFormat('dd/MM/yyyy');
-  //     return dateFormat.parse(dateStr);
-  //   }
-
-  //   projetos.forEach(
-  //     (projeto) {
-  //       //print(projeto.terminoEstimado);
-  //       bool terminando = false;
-  //       // Data de destino (exemplo: 10 de março de 2025)
-  //       DateTime parsedDate = parseDate(projeto.terminoEstimado);
-  //       //print('Data convertida: $parsedDate');
-  //       // Data de hoje
-  //       DateTime today = DateTime.now();
-  //       // Calcula a diferença entre as duas datas
-  //       Duration difference = parsedDate.difference(today);
-  //       //print('diferença em dias: ${difference.inDays + 1}');
-  //       if ((difference.inDays + 1) < 4) {
-  //         terminando = true;
-  //       }
-
-  //       originalList.add(
-  //         GestureDetector(
-  //           // onTap: () {
-  //           //   HapticFeedback.lightImpact();
-  //           //   Navigator.push(
-  //           //       context,
-  //           //       MaterialPageRoute(
-  //           //         builder: (context) => GestaoDetailPage(
-  //           //           projeto: projeto,
-  //           //         ),
-  //           //       ));
-
-  //           //   refresh();
-  //           // },
-  //           child: Container(
-  //             width: 90,
-  //             height: 143,
-  //             color: ColorsDart().FundoApp,
-  //             child: Container(
-  //               height: 160,
-  //               child: Center(
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.center,
-  //                   mainAxisAlignment: MainAxisAlignment.start,
-  //                   children: [
-  //                     Container(
-  //                       width: 70,
-  //                       height: 120,
-  //                       color: Colors.transparent,
-  //                       child: Image.asset(
-  //                         projeto.status == Status.ATRASADA
-  //                             ? 'assets/garrafa_atrasada.png'
-  //                             : projeto.status == Status.TERMINADA
-  //                                 ? 'assets/garrafa_finalizada.png'
-  //                                 : terminando
-  //                                     ? 'assets/garrafa_terminando.png'
-  //                                     : 'assets/garrafa_andamento.png',
-  //                         fit: BoxFit.fitHeight,
-  //                       ),
-  //                     ),
-  //                     Text(
-  //                       projeto != null ? projeto.nome : "sem nome",
-  //                       maxLines: 1, // Impede que o texto quebre linha
-  //                       overflow: TextOverflow
-  //                           .ellipsis, // Exibe '...' se o texto não couber
-  //                       style: TextStyle(fontSize: 11),
-  //                       textAlign: TextAlign.center,
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ); // Adiciona cada item na nova lista
-  //     },
-  //   );
-  // }
-
   void reorganizarTarefas(List<ProjetoModel> tarefas) {
     setState(() {
       // Ordena colocando os itens com Status.TERMINADO no final
@@ -170,8 +76,10 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
   refresh() async {
     List<ProjetoModel> temp = [];
     print('*******************************  COMEÇOU');
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore.collection("TarefasGestao").get();
+    print('campeonato ${widget.campeonato}');
+    QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+        .collection("TarefasEmpreendimento${widget.campeonato}")
+        .get();
     for (var doc in snapshot.docs) {
       temp.add(ProjetoModel.fromMap(doc.data()));
       print(doc.data());
@@ -229,7 +137,8 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
                           try {
                             // Referência do Firestore para o documento que você quer deletar
                             await FirebaseFirestore.instance
-                                .collection('TarefasGestao')
+                                .collection(
+                                    'TarefasEmpreendimento${widget.campeonato}')
                                 .doc(projeto.id.toString())
                                 .delete();
                             print('Documento deletado com sucesso');
@@ -256,12 +165,11 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
               final retorno = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GestaoDetailPage(
+                    builder: (context) => EmpreendimentoDetailPage(
                       projeto: projeto,
                     ),
                   )).then(
                 (value) {
-                  print('Voltou');
                   refresh();
                 },
               );
@@ -631,7 +539,8 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
 
                             // mandar para o banco
                             firestore
-                                .collection('TarefasGestao')
+                                .collection(
+                                    'TarefasEmpreendimento${widget.campeonato}')
                                 .doc((addTarefa.id).toString())
                                 .set(addTarefa.toMap());
 
@@ -691,12 +600,13 @@ class _GarrafasGestaoState extends State<GarrafasGestao> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.campeonato);
     // refresh();
     // for (var element in MainModel().projetos) {
     //   print('Responsáveis pelas Tarefas:  ${element.responsavelTarefa}');
     // }
 
-    final projetos = Provider.of<MainModel>(context).items;
+    //final projetos = Provider.of<MainModel>(context).items;
     // Função para dividir a lista original em sublistas com até 8 itens
     List<List<Widget>> splitListIntoChunks(List<Widget> list, int chunkSize) {
       List<List<Widget>> chunkedLists = [];

@@ -1,10 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:senai_f1/screens/Empreendimento/empreendimento_projetos.dart';
-import 'package:senai_f1/screens/Engenharia/reg_nac_engenharia.dart';
-import 'package:senai_f1/screens/GestaoProjeto/gestao_projetos.dart';
-import 'package:senai_f1/screens/TarefasGerais/tarefasGerais_projetos.dart';
+import 'package:senai_f1/screens/Empreendimento/campeonato/empreendimento_projetos.dart';
+import 'package:senai_f1/screens/Empreendimento/reg_nac_mund_empreendimento.dart';
+import 'package:senai_f1/screens/Engenharia/reg_nac_mund_engenharia.dart';
+
+import 'package:senai_f1/screens/GestaoProjeto/reg_nac_gestao.dart';
+import 'package:senai_f1/screens/TarefasGerais/campeonato/tarefasGerais_projetos.dart';
+import 'package:senai_f1/screens/TarefasGerais/reg_nac_mund_tarefasgerais.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
 import 'package:senai_f1/widgets/customDrawer.dart';
@@ -316,16 +319,17 @@ class _HomescreenState extends State<Homescreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Sessao(
-                                  corfundo: Colors.black,
-                                  titulo: 'Engenharia',
-                                  image: 'assets/icon_engenharia.png',
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            reg_nac_Engenharia(),
-                                      )),
-                                ),
+                                    corfundo: Colors.black,
+                                    titulo: 'Engenharia',
+                                    image: 'assets/icon_engenharia.png',
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                reg_nac_Engenharia(),
+                                          ));
+                                    }),
                                 Sessao(
                                   corfundo: colorDart.VermelhoPadrao,
                                   titulo: 'Gestão de Projetos',
@@ -333,7 +337,7 @@ class _HomescreenState extends State<Homescreen> {
                                   onPressed: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => GestaoProjetos(),
+                                        builder: (context) => reg_nac_Gestao(),
                                       )),
                                 ),
                               ],
@@ -351,7 +355,7 @@ class _HomescreenState extends State<Homescreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        TarefasGeraisProjetos(),
+                                        reg_nac_TarefasGerais(),
                                   )),
                             ),
                             Sessao(
@@ -362,7 +366,7 @@ class _HomescreenState extends State<Homescreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        EmpreendimentoProjetos(),
+                                        reg_nac_Empreendimento(),
                                   )),
                             ),
                           ],
@@ -421,6 +425,7 @@ class Sessao extends StatelessWidget {
             onTap: () {
               onPressed();
               //onPressed;
+
               HapticFeedback.lightImpact(); // Vibração leve
             },
             child: Container(
