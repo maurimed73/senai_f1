@@ -4,9 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:senai_f1/provider/provider_main.dart';
 import 'package:senai_f1/screens/Engenharia/engenharia_menu.dart';
+import 'package:senai_f1/screens/sessao_das_areas/HomeScreen.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
 import 'package:senai_f1/widgets/customDrawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
 // ignore: camel_case_types
 class reg_nac_Engenharia extends StatefulWidget {
@@ -40,7 +42,7 @@ class _reg_nac_EngenhariaState extends State<reg_nac_Engenharia> {
           ),
           elevation: 10,
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -141,331 +143,361 @@ class _reg_nac_EngenhariaState extends State<reg_nac_Engenharia> {
 
   @override
   Widget build(BuildContext context) {
+    double alturaTela = MediaQuery.of(context).size.height;
+    print(alturaTela);
     return Consumer<MainModel>(
-      builder: (context, provider, child) => Scaffold(
-        backgroundColor: colorDart.FundoApp,
-        drawer: CustomDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 32, bottom: 0, left: 1, right: 1),
-          child: Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // AppBar
-                  Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.33,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: ColorsDart().VermelhoPadrao,
-                          borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(8),
-                              bottomRight: Radius.circular(8),
-                              topLeft: Radius.circular(8),
-                              topRight: Radius.circular(8))),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 0, right: 0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(0),
-                              height: MediaQuery.of(context).size.height * 0.18,
-                              color: Colors.transparent,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // VOLTAR
-                                  // VOLTAR
-                                  Column(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          HapticFeedback
-                                              .lightImpact(); // Vibração leve
-                                          Navigator.pop(context);
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Container(
-                                            width: 35, // Largura da bola
-                                            height: 35, // Altura da bola
-                                            decoration: const BoxDecoration(
-                                              color: Colors
-                                                  .black, // Cor da bola (preto)
-                                              shape: BoxShape
-                                                  .circle, // Forma circular
-                                            ),
-                                            child: const Center(
-                                              child: Icon(
-                                                Icons
-                                                    .arrow_back, // Ícone de casa
+      builder: (context, provider, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          backgroundColor: colorDart.FundoApp,
+          drawer: CustomDrawer(context: context),
+          body: Padding(
+            padding:
+                const EdgeInsets.only(top: 32, bottom: 0, left: 1, right: 1),
+            child: Center(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // AppBar
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.33,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: ColorsDart().VermelhoPadrao,
+                            borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8),
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8))),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0, right: 0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(0),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.18,
+                                color: Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    //VOLTAR
+                                    Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            HapticFeedback
+                                                .lightImpact(); // Vibração leve
+                                            Navigator.pop(context);
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Container(
+                                              width: 35, // Largura da bola
+                                              height: 35, // Altura da bola
+                                              decoration: const BoxDecoration(
                                                 color: Colors
-                                                    .white, // Cor do ícone
-                                                size: 25, // Tamanho do ícone
+                                                    .black, // Cor da bola (preto)
+                                                shape: BoxShape
+                                                    .circle, // Forma circular
+                                              ),
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons
+                                                      .arrow_back, // Ícone de casa
+                                                  color: Colors
+                                                      .white, // Cor do ícone
+                                                  size: 25, // Tamanho do ícone
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  // LOGO CENTRAL
-                                  Column(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            right: MediaQuery.of(context)
+                                      ],
+                                    ),
+                                    // LOGO CENTRAL
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              right: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.06),
+                                          child: Container(
+                                            width: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.06),
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.45,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.16,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.transparent,
-                                            shape: BoxShape.rectangle,
-                                            image: DecorationImage(
-                                              image: AssetImage(
-                                                  'assets/logo1.png'), // Substitua pelo caminho do seu logo
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  // PERSON ICON
-                                  Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 5),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            HapticFeedback.lightImpact();
-                                          },
-                                          child: Container(
-                                            width: 40, // Largura da bola
-                                            height: 35, // Altura da bola
+                                                0.47,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.16,
                                             decoration: const BoxDecoration(
-                                              color: Colors
-                                                  .black, // Cor da bola (preto)
-                                              shape: BoxShape
-                                                  .circle, // Forma circular
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.only(
-                                                  bottom: 0, left: 0, right: 0),
-                                              child: Icon(
-                                                Icons.person,
-                                                color: Colors.white,
+                                              color: Colors.transparent,
+                                              shape: BoxShape.rectangle,
+                                              image: DecorationImage(
+                                                image: AssetImage(
+                                                    'assets/logo1.png'), // Substitua pelo caminho do seu logo
+                                                fit: BoxFit.cover,
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                    // PERSON ICON
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, right: 8),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              HapticFeedback.lightImpact();
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        Homescreen(),
+                                                  ));
+                                            },
+                                            child: Container(
+                                              width: 40, // Largura da bola
+                                              height: 35, // Altura da bola
+                                              decoration: const BoxDecoration(
+                                                color: Colors
+                                                    .black, // Cor da bola (preto)
+                                                shape: BoxShape
+                                                    .circle, // Forma circular
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.only(
+                                                    bottom: 0,
+                                                    left: 0,
+                                                    right: 0),
+                                                child: Icon(
+                                                  Icons.home,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.only(bottom: 0),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.13,
+                                color: Colors.transparent,
+                                child: Text(
+                                  AppLocalizations.of(context)!.engineering,
+                                  style: TextStyle(
+                                      fontSize: 52,
+                                      fontFamily: 'LeagueGothic',
+                                      fontWeight: FontWeight.w500,
+                                      shadows: [
+                                        Shadow(
+                                          offset: const Offset(3.0,
+                                              3.0), // Posição da sombra (horizontal, vertical)
+                                          blurRadius:
+                                              10.0, // A quantidade de desfoque da sombra
+                                          color: Colors.black
+                                              // ignore: deprecated_member_use
+                                              .withOpacity(
+                                                  0.7), // Cor da sombra
+                                        ),
+                                      ],
+                                      color: Colors.white),
+                                ),
+                              )
+                            ],
+                          ),
+                        )),
+
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 2, top: 10, right: 2, bottom: 5),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.58,
+                        decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: colorDart.VermelhoPadrao.withAlpha(80),
+                                width: 1)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 15, right: 10, left: 35),
+                              child: SizedBox(
+                                height: 35,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: colorDart
+                                        .VermelhoPadrao, // Cor do texto
+                                    elevation: 5, // Sombra
+                                    shape: RoundedRectangleBorder(
+                                      // Forma do botão
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
                                   ),
-                                ],
+                                  child: Text(
+                                    '${AppLocalizations.of(context)!.season} 24/25',
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
                               ),
                             ),
-                            Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.only(bottom: 0),
-                              height: MediaQuery.of(context).size.height * 0.13,
-                              color: Colors.transparent,
-                              child: Text(
-                                'ENGENHARIA',
-                                style: TextStyle(
-                                    fontSize: 52,
-                                    fontFamily: 'LeagueGothic',
-                                    fontWeight: FontWeight.w500,
-                                    shadows: [
-                                      Shadow(
-                                        offset: const Offset(3.0,
-                                            3.0), // Posição da sombra (horizontal, vertical)
-                                        blurRadius:
-                                            10.0, // A quantidade de desfoque da sombra
-                                        color: Colors.black
-                                            // ignore: deprecated_member_use
-                                            .withOpacity(0.7), // Cor da sombra
-                                      ),
-                                    ],
-                                    color: Colors.white),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 20, bottom: 20),
+                              child: Sessao(
+                                corfundo: Colors.black,
+                                image: 'assets/icon_engenharia.png',
                               ),
-                            )
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: SizedBox(
+                                height: alturaTela > 650 ? 45 : 35,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    HapticFeedback.lightImpact();
+                                    provider.area = "TarefasEngenharia";
+                                    provider.campeonato = 'Regional';
+                                    String camp = provider.campeonato;
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EngenhariaMenu(
+                                            campeonato: camp,
+                                          ),
+                                        ));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.only(bottom: 0),
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: colorDart
+                                        .VermelhoPadrao, // Cor do texto
+                                    elevation: 5, // Sombra
+                                    shape: RoundedRectangleBorder(
+                                      // Forma do botão
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.regional,
+                                    style: const TextStyle(fontSize: 26),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 15),
+                              child: SizedBox(
+                                height: alturaTela > 650 ? 45 : 35,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    HapticFeedback.lightImpact();
+                                    provider.area = "TarefasEngenharia";
+                                    provider.campeonato = 'Nacional';
+                                    String camp = provider.campeonato;
+
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EngenhariaMenu(
+                                            campeonato: camp,
+                                          ),
+                                        ));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor:
+                                        Colors.white, // Cor do texto
+                                    elevation: 5, // Sombra
+                                    shape: RoundedRectangleBorder(
+                                      // Forma do botão
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                  child: Text(
+                                      AppLocalizations.of(context)!.national,
+                                      style: const TextStyle(
+                                          fontSize: 26, color: Colors.black)),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: SizedBox(
+                                height: alturaTela > 650 ? 45 : 35,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    HapticFeedback.lightImpact();
+                                    provider.area = "TarefasEngenharia";
+                                    String camp = Provider.of<MainModel>(
+                                            context,
+                                            listen: false)
+                                        .campeonato = 'Mundial';
+
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EngenhariaMenu(
+                                            campeonato: camp,
+                                          ),
+                                        ));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: colorDart
+                                        .VermelhoPadrao, // Cor do texto
+                                    elevation: 5, // Sombra
+                                    shape: RoundedRectangleBorder(
+                                      // Forma do botão
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.worldwide,
+                                    style: const TextStyle(fontSize: 26),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      )),
-
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 2, top: 10, right: 2, bottom: 5),
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.58,
-                      decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                              color: colorDart.VermelhoPadrao.withAlpha(80),
-                              width: 1)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 15, right: 35, left: 35),
-                            child: SizedBox(
-                              height: 35,
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor:
-                                      colorDart.VermelhoPadrao, // Cor do texto
-                                  elevation: 5, // Sombra
-                                  shape: RoundedRectangleBorder(
-                                    // Forma do botão
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'TEMPORADA 24/25',
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20, bottom: 20),
-                            child: Sessao(
-                              corfundo: Colors.black,
-                              image: 'assets/icon_engenharia.png',
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: SizedBox(
-                              height: 35,
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  provider.area = "TarefasEngenharia";
-                                  provider.campeonato = 'Regional';
-                                  String camp = provider.campeonato;
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EngenhariaMenu(
-                                          campeonato: camp,
-                                        ),
-                                      ));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor:
-                                      colorDart.VermelhoPadrao, // Cor do texto
-                                  elevation: 5, // Sombra
-                                  shape: RoundedRectangleBorder(
-                                    // Forma do botão
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'REGIONAL',
-                                  style: TextStyle(fontSize: 26),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 15),
-                            child: SizedBox(
-                              height: 35,
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  provider.area = "TarefasEngenharia";
-                                  provider.campeonato = 'Nacional';
-                                  String camp = provider.campeonato;
-
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EngenhariaMenu(
-                                          campeonato: camp,
-                                        ),
-                                      ));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: Colors.white, // Cor do texto
-                                  elevation: 5, // Sombra
-                                  shape: RoundedRectangleBorder(
-                                    // Forma do botão
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                                child: const Text('NACIONAL',
-                                    style: TextStyle(
-                                        fontSize: 26, color: Colors.black)),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: SizedBox(
-                              height: 35,
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  provider.area = "TarefasEngenharia";
-                                  String camp = Provider.of<MainModel>(context,
-                                          listen: false)
-                                      .campeonato = 'Mundial';
-
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EngenhariaMenu(
-                                          campeonato: camp,
-                                        ),
-                                      ));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor:
-                                      colorDart.VermelhoPadrao, // Cor do texto
-                                  elevation: 5, // Sombra
-                                  shape: RoundedRectangleBorder(
-                                    // Forma do botão
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'MUNDIAL',
-                                  style: TextStyle(fontSize: 26),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

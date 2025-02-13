@@ -1,17 +1,25 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:senai_f1/models/projeto_model.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:provider/provider.dart';
+
+import 'package:senai_f1/models/projeto_model.dart';
 import 'package:senai_f1/provider/provider_main.dart';
 import 'package:senai_f1/screens/Engenharia/campeonato/engenharia_tarefa.dart';
 import 'package:senai_f1/utils/colors.dart';
 
 class GarrafasEngenharia extends StatefulWidget {
   String campeonato;
-  GarrafasEngenharia({super.key, required this.campeonato});
+  BuildContext contextGarrafa;
+  GarrafasEngenharia({
+    super.key,
+    required this.campeonato,
+    required this.contextGarrafa,
+  });
   @override
   State<GarrafasEngenharia> createState() => _GarrafasEngenhariaState();
 }
@@ -28,20 +36,28 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
     super.initState();
     refresh();
     // getProjetosFromFirebase();
-    originalList.add(GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        _criarNovaTarefa();
-      },
-      child: Container(
-          width: 90,
-          height: 120,
-          color: ColorsDart().FundoApp,
+    originalList.add(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner: false,
+      home: GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          _criarNovaTarefa(widget.contextGarrafa);
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
           child: Container(
-              child: Center(
-                  child: Image.asset(
-            'assets/garrafa_mais.png',
-          )))),
+              width: 90,
+              height: 120,
+              color: ColorsDart().FundoApp,
+              child: Container(
+                  child: Center(
+                      child: Image.asset(
+                'assets/garrafa_mais.png',
+              )))),
+        ),
+      ),
     ));
   }
 
@@ -96,126 +112,123 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
 
     reorganizarTarefas(temp);
 
-    temp.forEach(
-      (projeto) {
-        //print(projeto.terminoEstimado);
-        bool terminando = false;
-        // Data de destino (exemplo: 10 de março de 2025)
-        DateTime parsedDate = parseDate(projeto.terminoEstimado);
-        //print('Data convertida: $parsedDate');
-        // Data de hoje
-        DateTime today = DateTime.now();
-        // Calcula a diferença entre as duas datas
-        Duration difference = parsedDate.difference(today);
-        //print('diferença em dias: ${difference.inDays + 1}');
-        if ((difference.inDays + 1) < 4 && (difference.inDays + 1) > 0) {
-          terminando = true;
-        }
-        print(projeto.id);
-        originalList.add(
-          GestureDetector(
-            onLongPress: () async {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Deletar Item'),
-                    content: Text(
-                        'Item ${projeto.nome.toUpperCase()} será deletado?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          // Fecha o diálogo
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Cancelar'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          // Deleta o item
-                          try {
-                            // Referência do Firestore para o documento que você quer deletar
-                            await FirebaseFirestore.instance
-                                .collection(
-                                    'TarefasEngenharia${widget.campeonato}')
-                                .doc(projeto.id.toString())
-                                .delete();
-                            print('Documento deletado com sucesso');
-                          } catch (e) {
-                            print('Erro ao deletar o documento: $e');
-                          }
-
-                          refresh();
-
-                          // Fecha o diálogo
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Deletar'),
-                      ),
-                    ],
-                  );
-                },
-              );
-
-              temp.removeWhere((tarefa) => tarefa.id == projeto.id);
-            },
-            onTap: () async {
-              HapticFeedback.lightImpact();
-              final retorno = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EngenhariaDetailPage(
-                      projeto: projeto,
+    for (var projeto in temp) {
+      //print(projeto.terminoEstimado);
+      bool terminando = false;
+      // Data de destino (exemplo: 10 de março de 2025)
+      DateTime parsedDate = parseDate(projeto.terminoEstimado);
+      //print('Data convertida: $parsedDate');
+      // Data de hoje
+      DateTime today = DateTime.now();
+      // Calcula a diferença entre as duas datas
+      Duration difference = parsedDate.difference(today);
+      //print('diferença em dias: ${difference.inDays + 1}');
+      if ((difference.inDays + 1) < 4 && (difference.inDays + 1) > 0) {
+        terminando = true;
+      }
+      print(projeto.id);
+      originalList.add(
+        GestureDetector(
+          onLongPress: () async {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Deletar Item'),
+                  content:
+                      Text('Item ${projeto.nome.toUpperCase()} será deletado?'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        // Fecha o diálogo
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancelar'),
                     ),
-                  )).then(
-                (value) {
-                  refresh();
-                },
-              );
-            },
-            child: Container(
-              width: 90,
-              height: 143,
-              color: ColorsDart().FundoApp,
-              child: Container(
-                height: 160,
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 70,
-                        height: 120,
-                        color: Colors.transparent,
-                        child: Image.asset(
-                          projeto.status == Status.ATRASADA
-                              ? 'assets/garrafa_atrasada.png'
-                              : projeto.status == Status.TERMINADA
-                                  ? 'assets/garrafa_finalizada.png'
-                                  : terminando
-                                      ? 'assets/garrafa_terminando.png'
-                                      : 'assets/garrafa_andamento.png',
-                          fit: BoxFit.fitHeight,
-                        ),
+                    TextButton(
+                      onPressed: () async {
+                        // Deleta o item
+                        try {
+                          // Referência do Firestore para o documento que você quer deletar
+                          await FirebaseFirestore.instance
+                              .collection(
+                                  'TarefasEngenharia${widget.campeonato}')
+                              .doc(projeto.id.toString())
+                              .delete();
+                          print('Documento deletado com sucesso');
+                        } catch (e) {
+                          print('Erro ao deletar o documento: $e');
+                        }
+
+                        refresh();
+
+                        // Fecha o diálogo
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Deletar'),
+                    ),
+                  ],
+                );
+              },
+            );
+
+            temp.removeWhere((tarefa) => tarefa.id == projeto.id);
+          },
+          onTap: () async {
+            HapticFeedback.lightImpact();
+            final retorno = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EngenhariaDetailPage(
+                      projeto: projeto, contextGarrafa: widget.contextGarrafa),
+                )).then(
+              (value) {
+                refresh();
+              },
+            );
+          },
+          child: Container(
+            width: 90,
+            height: 143,
+            color: ColorsDart().FundoApp,
+            child: SizedBox(
+              height: 160,
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 70,
+                      height: 120,
+                      color: Colors.transparent,
+                      child: Image.asset(
+                        projeto.status == Status.ATRASADA
+                            ? 'assets/garrafa_atrasada.png'
+                            : projeto.status == Status.TERMINADA
+                                ? 'assets/garrafa_finalizada.png'
+                                : terminando
+                                    ? 'assets/garrafa_terminando.png'
+                                    : 'assets/garrafa_andamento.png',
+                        fit: BoxFit.fitHeight,
                       ),
-                      Text(
-                        projeto != null ? projeto.nome : "sem nome",
-                        maxLines: 1, // Impede que o texto quebre linha
-                        overflow: TextOverflow
-                            .ellipsis, // Exibe '...' se o texto não couber
-                        style: TextStyle(fontSize: 11),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                    ),
+                    Text(
+                      projeto != null ? projeto.nome : "sem nome",
+                      maxLines: 1, // Impede que o texto quebre linha
+                      overflow: TextOverflow
+                          .ellipsis, // Exibe '...' se o texto não couber
+                      style: const TextStyle(fontSize: 11),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        ); // Adiciona cada item na nova lista
-      },
-    );
+        ),
+      ); // Adiciona cada item na nova lista
+    }
     if (mounted) {
       setState(() {});
     }
@@ -261,14 +274,15 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
     }
   }
 
-  Future<void> _criarNovaTarefa() async {
+  Future<void> _criarNovaTarefa(contextGarrafa) async {
+    final t = AppLocalizations.of(contextGarrafa);
     tituloAdd.text = "";
     descricaoAdd.text = "";
     inicioEstimadoAdd.text = "";
     terminoEstimadoAdd.text = "";
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return Dialog(
           insetPadding: const EdgeInsets.all(0), // Remove o padding padrão
           child: Container(
@@ -294,9 +308,9 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const Text(
-                            'Adicionar Informações',
-                            style: TextStyle(
+                          Text(
+                            t!.addinformation,
+                            style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
@@ -312,7 +326,7 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
                         ],
                       ),
                     ),
-                    // const Divider(),
+
                     // Corpo do dialog
                     Container(
                       color: Colors.transparent,
@@ -342,9 +356,9 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Título: ',
-                                  style: TextStyle(fontSize: 10),
+                                Text(
+                                  t.title,
+                                  style: const TextStyle(fontSize: 10),
                                 ),
                                 Container(
                                   alignment: Alignment.center,
@@ -377,9 +391,9 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
                                 const SizedBox(
                                   height: 5,
                                 ),
-                                const Text(
-                                  'Descrição',
-                                  style: TextStyle(fontSize: 10),
+                                Text(
+                                  t.description,
+                                  style: const TextStyle(fontSize: 10),
                                 ),
                                 Container(
                                   color: Colors.grey.shade300,
@@ -411,9 +425,9 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
                                 const SizedBox(
                                   height: 5,
                                 ),
-                                const Text(
-                                  'Início Estimado: ',
-                                  style: TextStyle(fontSize: 10),
+                                Text(
+                                  t.estimatedstart,
+                                  style: const TextStyle(fontSize: 10),
                                 ),
                                 Container(
                                   alignment: Alignment.center,
@@ -450,9 +464,9 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
                                 const SizedBox(
                                   height: 5,
                                 ),
-                                const Text(
-                                  'Término Estimado: ',
-                                  style: TextStyle(fontSize: 10),
+                                Text(
+                                  t.estimatedend,
+                                  style: const TextStyle(fontSize: 10),
                                 ),
                                 Container(
                                   alignment: Alignment.center,
@@ -493,9 +507,7 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
                       ),
                     ),
 
-                    //const Spacer(),
                     // Botão para fechar
-
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: GestureDetector(
@@ -550,19 +562,39 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
 
                             // novaTarefa(addTarefa);
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Tarefa Adicionada!'),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
                             Navigator.pop(context);
                           } else {
-                            // Se a validação falhar
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Há erros no formulário'),
-                                  duration: Duration(seconds: 2)),
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 16,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text(t.attention,
+                                            style:
+                                                const TextStyle(fontSize: 20)),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          t.formwithincorrectdata,
+                                        ),
+                                        const SizedBox(height: 20),
+                                        ElevatedButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: const Text('Ok'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
                             );
                           }
                         },
@@ -574,9 +606,9 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
                               color: ColorsDart().VermelhoPadrao,
                               border: Border.all(color: Colors.black, width: 1),
                               borderRadius: BorderRadius.circular(4)),
-                          child: const Text(
-                            'ADICIONAR TAREFA',
-                            style: TextStyle(
+                          child: Text(
+                            t.addtask,
+                            style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
@@ -599,13 +631,10 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
 
   @override
   Widget build(BuildContext context) {
+    double AlturaTela = MediaQuery.of(context).size.height;
+    print(AlturaTela);
     print(widget.campeonato);
-    // refresh();
-    // for (var element in MainModel().projetos) {
-    //   print('Responsáveis pelas Tarefas:  ${element.responsavelTarefa}');
-    // }
 
-    //final projetos = Provider.of<MainModel>(context).items;
     // Função para dividir a lista original em sublistas com até 8 itens
     List<List<Widget>> splitListIntoChunks(List<Widget> list, int chunkSize) {
       List<List<Widget>> chunkedLists = [];
@@ -617,31 +646,32 @@ class _GarrafasEngenhariaState extends State<GarrafasEngenharia> {
     }
 
     // Dividindo a lista em sublistas de até 8 itens
-    List<List<Widget>> wrappedLists = splitListIntoChunks(originalList, 4);
+    List<List<Widget>> wrappedLists =
+        splitListIntoChunks(originalList, AlturaTela < 600 ? 4 : 3);
 
     return Consumer<MainModel>(
       builder: (context, value, child) => SingleChildScrollView(
         scrollDirection: Axis.horizontal, // Permite rolagem horizontal
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             value.loading
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: wrappedLists.map((wrapList) {
                       return SizedBox(
-                        width: 190,
+                        width: AlturaTela < 600 ? 190 : 120,
                         child: Container(
-                          margin: EdgeInsets.only(
+                          margin: const EdgeInsets.only(
                               right: 0), // Espaço entre os wraps
                           child: Wrap(
                             spacing:
                                 5, // Espaçamento entre os itens dentro do Wrap
                             runSpacing:
-                                10, // Espaçamento entre as linhas do Wrap
+                                15, // Espaçamento entre as linhas do Wrap
                             children: wrapList,
                           ),
                         ),

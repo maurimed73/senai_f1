@@ -1,11 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:provider/provider.dart';
+
 import 'package:senai_f1/models/projeto_model.dart';
 import 'package:senai_f1/provider/provider_main.dart';
 import 'package:senai_f1/services/login_service.dart';
@@ -13,7 +16,12 @@ import 'package:senai_f1/utils/colors.dart';
 
 class GestaoDetailPage extends StatefulWidget {
   ProjetoModel? projeto;
-  GestaoDetailPage({super.key, this.projeto});
+  BuildContext contextGarrafa;
+  GestaoDetailPage({
+    super.key,
+    this.projeto,
+    required this.contextGarrafa,
+  });
 
   @override
   State<GestaoDetailPage> createState() => _GestaoDetailPageState();
@@ -46,7 +54,7 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
     if (widget.projeto!.status == Status.TERMINADA) {
       print('**********************************************Deu certo');
       firestore
-          .collection('TarefasGestao${campeonato}')
+          .collection('TarefasGestao$campeonato')
           .doc((widget.projeto!.id).toString())
           .update({'status': 'TERMINADA'});
       setState(() {
@@ -56,15 +64,19 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
       setState(() {
         if (difference.isNegative) {
           // Se a data já passou, exibe "Atrasado"
-          countdown = "Atrasado ${difference.inDays.abs()} dias";
+
+          //countdown = "Atrasado ${difference.inDays.abs()} dias";
+          countdown =
+              "${AppLocalizations.of(widget.contextGarrafa)!.late} ${difference.inDays.abs()} ${AppLocalizations.of(widget.contextGarrafa)!.days}";
           var status = Status.ATRASADA;
           firestore
-              .collection('TarefasGestao${campeonato}')
+              .collection('TarefasGestao$campeonato')
               .doc((widget.projeto!.id).toString())
               .update({'status': status.toString().split('.').last});
         } else {
           // Caso contrário, mostra a contagem regressiva
-          countdown = "${difference.inDays + 1} dias restantes";
+          countdown =
+              "${difference.inDays + 1} ${AppLocalizations.of(widget.contextGarrafa)!.days} ${AppLocalizations.of(widget.contextGarrafa)!.remaining}";
           widget.projeto!.status = Status.ATIVO;
           if (difference.inDays + 1 < 4) {
             terminando = true;
@@ -183,539 +195,353 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
   @override
   Widget build(BuildContext context) {
     double alturaTela = MediaQuery.of(context).size.height;
+    double larguraTela = MediaQuery.of(context).size.width;
 
     //INÍCIO
-    return Scaffold(
-      resizeToAvoidBottomInset: false, // Isso permite que o layout se ajuste
-      backgroundColor: colorDart.FundoApp,
-      body: Padding(
-        padding: const EdgeInsets.only(top: 32, bottom: 0, left: 8, right: 8),
-        child: Center(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                // AppBar
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 70,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: ColorsDart().VermelhoPadrao,
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8))),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              HapticFeedback.lightImpact();
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              width: 35, // Largura da bola
-                              height: 35, // Altura da bola
-                              decoration: const BoxDecoration(
-                                color: Colors.black, // Cor da bola (preto)
-                                shape: BoxShape.circle, // Forma circular
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.arrow_back, // Ícone de casa
-                                  color: Colors.white, // Cor do ícone
-                                  size: 25, // Tamanho do ícone
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        resizeToAvoidBottomInset: false, // Isso permite que o layout se ajuste
+        backgroundColor: colorDart.FundoApp,
+        body: Padding(
+          padding: const EdgeInsets.only(top: 32, bottom: 0, left: 8, right: 8),
+          child: Center(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // AppBar
+                  Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 70,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: ColorsDart().VermelhoPadrao,
+                          borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8))),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                width: 35, // Largura da bola
+                                height: 35, // Altura da bola
+                                decoration: const BoxDecoration(
+                                  color: Colors.black, // Cor da bola (preto)
+                                  shape: BoxShape.circle, // Forma circular
                                 ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 100,
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/logo1.png'), // Substitua pelo caminho do seu logo
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              HapticFeedback.lightImpact();
-                            },
-                            child: Container(
-                              width: 40, // Largura da bola
-                              height: 35, // Altura da bola
-                              decoration: const BoxDecoration(
-                                color: Colors.black, // Cor da bola (preto)
-                                shape: BoxShape.circle, // Forma circular
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.only(
-                                    bottom: 0, left: 0, right: 0),
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-                // Dados da Página
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Card(
-                    margin: const EdgeInsets.all(0),
-                    elevation: 10,
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.62,
-                      width: MediaQuery.of(context).size.width * 1,
-                      color: Colors.transparent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // ROW -> PRIMEIRO ELEMENTO GARRAFA
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 5, top: 10),
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.15,
-                                  height: (MediaQuery.of(context).size.height *
-                                      0.24),
-                                  color: Colors.transparent,
-                                  child: Image.asset(
-                                    widget.projeto!.status == Status.ATRASADA
-                                        ? 'assets/garrafa_atrasada.png'
-                                        : widget.projeto!.status ==
-                                                Status.TERMINADA
-                                            ? 'assets/garrafa_finalizada.png'
-                                            : terminando
-                                                ? 'assets/garrafa_terminando.png'
-                                                : 'assets/garrafa_andamento.png',
-                                    fit: BoxFit.contain,
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.arrow_back, // Ícone de casa
+                                    color: Colors.white, // Cor do ícone
+                                    size: 25, // Tamanho do ícone
                                   ),
                                 ),
                               ),
-
-                              // ROW -> SEGUNDO  ELEMENTO COLUNA COM NOME E DESCRIÇÃO DA TAREFA
-                              Container(
-                                padding: const EdgeInsets.only(
-                                    left: 8, right: 8, bottom: 0, top: 5),
-                                decoration: const BoxDecoration(
-                                  color: Colors.transparent,
+                            ),
+                            Container(
+                              width: 100,
+                              height: 40,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/logo1.png'), // Substitua pelo caminho do seu logo
+                                  fit: BoxFit.cover,
                                 ),
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.26,
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      // ************************************* NOME  *************************************************
-                                      SizedBox(
-                                        height: 40,
-                                        //mudei
-                                        child: Text(
-                                          widget.projeto!.nome,
-                                          style: const TextStyle(
-                                              fontFamily: 'Poppins',
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      // ************************************* DESCRIÇÃO  *************************************************
-                                      SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.17,
-                                        child: SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                widget.projeto!.descricao,
-                                                style: const TextStyle(
-                                                    fontSize: 13,
-                                                    fontFamily: 'Poppins'),
-                                                textAlign: TextAlign.justify,
-                                              ),
-                                            ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                              },
+                              child: Container(
+                                width: 40, // Largura da bola
+                                height: 35, // Altura da bola
+                                decoration: BoxDecoration(
+                                  color: ColorsDart()
+                                      .VermelhoPadrao, // Cor da bola (preto)
+                                  shape: BoxShape.circle, // Forma circular
+                                ),
+                                // child: const Padding(
+                                //   padding: EdgeInsets.only(
+                                //       bottom: 0, left: 0, right: 0),
+                                //   child: Icon(
+                                //     Icons.person,
+                                //     color: Colors.white,
+                                //   ),
+                                // ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                  // Dados da Página
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Card(
+                      margin: const EdgeInsets.all(0),
+                      elevation: 10,
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.62,
+                        width: MediaQuery.of(context).size.width * 1,
+                        color: Colors.transparent,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // ROW -> PRIMEIRO ELEMENTO GARRAFA
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 5, top: 10),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.15,
+                                    height:
+                                        (MediaQuery.of(context).size.height *
+                                            0.24),
+                                    color: Colors.transparent,
+                                    child: Image.asset(
+                                      widget.projeto!.status == Status.ATRASADA
+                                          ? 'assets/garrafa_atrasada.png'
+                                          : widget.projeto!.status ==
+                                                  Status.TERMINADA
+                                              ? 'assets/garrafa_finalizada.png'
+                                              : terminando
+                                                  ? 'assets/garrafa_terminando.png'
+                                                  : 'assets/garrafa_andamento.png',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+
+                                // ROW -> SEGUNDO  ELEMENTO COLUNA COM NOME E DESCRIÇÃO DA TAREFA
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 8, right: 8, bottom: 0, top: 5),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.transparent,
+                                  ),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.75,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.26,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        // ************************************* NOME  *************************************************
+                                        SizedBox(
+                                          height: 40,
+                                          //mudei
+                                          child: Text(
+                                            widget.projeto!.nome,
+                                            style: const TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        // ************************************* DESCRIÇÃO  *************************************************
+                                        SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.17,
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  widget.projeto!.descricao,
+                                                  style: const TextStyle(
+                                                      fontSize: 13,
+                                                      fontFamily: 'Poppins'),
+                                                  textAlign: TextAlign.justify,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        // ************************************* INICIO ESTIMADO  *************************************************
+
+                                        // **********************************************************************************************************
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // TERCEIRO ELEMENTO -> DADOS DA TAREFA
+                            Container(
+                              margin: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
+                              width: MediaQuery.of(context).size.width * 0.93,
+                              height: MediaQuery.of(context).size.height * 0.32,
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                      color: colorDart.VermelhoPadrao)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        color: Colors.transparent,
+                                        height: 25,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(widget.contextGarrafa)!.estimatedstart}:',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    larguraTela < 400 ? 16 : 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       const SizedBox(
-                                        height: 20,
+                                        height: 2,
                                       ),
-                                      // ************************************* INICIO ESTIMADO  *************************************************
-
-                                      // **********************************************************************************************************
+                                      Container(
+                                        color: Colors.transparent,
+                                        height: 25,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(widget.contextGarrafa)!.completedstart}:',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    larguraTela < 400 ? 16 : 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 2,
+                                      ),
+                                      Container(
+                                        color: Colors.transparent,
+                                        height: 25,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(widget.contextGarrafa)!.estimatedend}:',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    larguraTela < 400 ? 16 : 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 2,
+                                      ),
+                                      Container(
+                                        color: Colors.transparent,
+                                        height: 25,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(widget.contextGarrafa)!.completionaccomplished}:',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    larguraTela < 400 ? 16 : 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 2,
+                                      ),
+                                      Container(
+                                        color: Colors.transparent,
+                                        height: 25,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(widget.contextGarrafa)!.durationindays}:',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    larguraTela < 400 ? 16 : 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 2,
+                                      ),
+                                      Container(
+                                        color: Colors.transparent,
+                                        height: 25,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${AppLocalizations.of(widget.contextGarrafa)!.accountable}:',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    larguraTela < 400 ? 16 : 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          // TERCEIRO ELEMENTO -> DADOS DA TAREFA
-                          Container(
-                            margin: const EdgeInsets.all(8),
-                            padding: const EdgeInsets.all(8),
-                            width: MediaQuery.of(context).size.width * 0.93,
-                            height: MediaQuery.of(context).size.height * 0.32,
-                            decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                    color: colorDart.VermelhoPadrao)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      color: Colors.transparent,
-                                      height: 25,
-                                      child: const Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Início Estimado:',
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Container(
-                                      color: Colors.transparent,
-                                      height: 25,
-                                      child: const Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Início Realizado:',
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Container(
-                                      color: Colors.transparent,
-                                      height: 25,
-                                      child: const Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Término Estimado:',
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Container(
-                                      color: Colors.transparent,
-                                      height: 25,
-                                      child: const Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Término Realizado:',
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Container(
-                                      color: Colors.transparent,
-                                      height: 25,
-                                      child: const Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Duração em Dias:',
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Container(
-                                      color: Colors.transparent,
-                                      height: 25,
-                                      child: const Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Responsável:',
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
 
-                                // 2º COLUNA DOS
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(
-                                      height: 1,
-                                    ),
-                                    // INICIO ESTIMADO
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            4), // Aqui define-se o raio da borda
+                                  // 2º COLUNA DOS
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        height: 1,
                                       ),
-                                      elevation: 5, // Define a sombra do Card
-                                      margin: const EdgeInsets.only(left: 10),
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        height: 25,
-                                        width: 120,
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 50,
-                                              child: Text(
-                                                widget.projeto!.inicioEstimado,
-                                                style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 16,
-                                                    fontFamily: 'Poppins'),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 15),
-                                              child: Container(
-                                                width: 10,
-                                                height: 10,
-                                                color: Colors.transparent,
-                                                child: Icon(
-                                                  Icons.check,
-                                                  size: 20,
-                                                  color: widget.projeto!
-                                                              .inicioEstimado ==
-                                                          ""
-                                                      ? Colors.transparent
-                                                      : Colors.black,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    //  INICIO REALIZADO
-                                    GestureDetector(
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              4), // Aqui define-se o raio da borda
-                                        ),
-                                        elevation: 5, // Define a sombra do Card
-                                        margin: const EdgeInsets.only(left: 10),
-                                        child: Container(
-                                          color: Colors.transparent,
-                                          height: 23,
-                                          width: 120,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                alignment: Alignment.center,
-                                                width: 100,
-                                                height: 50,
-                                                child: Text(
-                                                  widget.projeto!.dataInicial,
-                                                  style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 16,
-                                                      fontFamily: 'Poppins'),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 15),
-                                                child: Container(
-                                                  width: 10,
-                                                  height: 10,
-                                                  color: Colors.transparent,
-                                                  child: Icon(
-                                                    Icons.check,
-                                                    size: 20,
-                                                    color: widget.projeto!
-                                                                .dataInicial ==
-                                                            ""
-                                                        ? Colors.transparent
-                                                        : Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () async {
-                                        if (widget.projeto!.status !=
-                                            Status.TERMINADA) {
-                                          resultInicioRealizado =
-                                              await _openDialog(
-                                                  context,
-                                                  "Inicio Realizado",
-                                                  widget.projeto!.dataInicial);
-
-                                          if (resultInicioRealizado != null) {
-                                            widget.projeto!.dataInicial =
-                                                resultInicioRealizado!;
-                                            firestore
-                                                .collection(
-                                                    'TarefasGestao${campeonato}')
-                                                .doc((widget.projeto!.id)
-                                                    .toString())
-                                                .update({
-                                              'dataInicial':
-                                                  widget.projeto!.dataInicial
-                                            });
-                                          }
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    //  TÉRMINO ESTIMADO
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            4), // Aqui define-se o raio da borda
-                                      ),
-                                      elevation: 5, // Define a sombra do Card
-                                      margin: const EdgeInsets.only(left: 10),
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        height: 25,
-                                        width: 120,
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 25,
-                                              child: Text(
-                                                widget.projeto!.terminoEstimado,
-                                                style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 16,
-                                                    fontFamily: 'Poppins'),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 15),
-                                              child: Container(
-                                                width: 10,
-                                                height: 10,
-                                                color: Colors.transparent,
-                                                child: Icon(
-                                                  Icons.check,
-                                                  size: 20,
-                                                  color: widget.projeto!
-                                                              .terminoEstimado ==
-                                                          ""
-                                                      ? Colors.transparent
-                                                      : Colors.black,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    //  TÉRMINO REALIZADO
-                                    GestureDetector(
-                                      onTap: () async {
-                                        if (widget.projeto!.status !=
-                                            Status.TERMINADA) {
-                                          resultTerminoRealizado =
-                                              await _openDialog(
-                                                  context,
-                                                  "Inicio Realizado",
-                                                  widget.projeto!.dataEntrega);
-
-                                          //mudei
-                                          if (resultTerminoRealizado != null) {
-                                            widget.projeto!.dataEntrega =
-                                                resultTerminoRealizado!;
-                                            firestore
-                                                .collection(
-                                                    'TarefasGestao${campeonato}')
-                                                .doc((widget.projeto!.id)
-                                                    .toString())
-                                                .update({
-                                              'dataEntrega':
-                                                  widget.projeto!.dataEntrega
-                                            });
-                                          }
-                                        }
-                                      },
-                                      child: Card(
+                                      // INICIO ESTIMADO
+                                      Card(
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                               4), // Aqui define-se o raio da borda
@@ -733,10 +559,10 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                                               Container(
                                                 alignment: Alignment.center,
                                                 width: 100,
-                                                height: 25,
-                                                //mudei
+                                                height: 50,
                                                 child: Text(
-                                                  widget.projeto!.dataEntrega,
+                                                  widget
+                                                      .projeto!.inicioEstimado,
                                                   style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 16,
@@ -754,9 +580,8 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                                                   child: Icon(
                                                     Icons.check,
                                                     size: 20,
-                                                    //mudei
                                                     color: widget.projeto!
-                                                                .dataEntrega ==
+                                                                .inicioEstimado ==
                                                             ""
                                                         ? Colors.transparent
                                                         : Colors.black,
@@ -767,87 +592,97 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    //  DURAÇÃO EM DIAS
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            4), // Aqui define-se o raio da borda
+                                      const SizedBox(
+                                        height: 2,
                                       ),
-                                      elevation: 5, // Define a sombra do Card
-                                      margin: const EdgeInsets.only(left: 10),
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        height: 25,
-                                        width: 120,
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 25,
-                                              child: Text(
-                                                calcularDiferencaEmDias(
-                                                            widget.projeto!
-                                                                .dataInicial,
-                                                            widget.projeto!
-                                                                .dataEntrega) !=
-                                                        0
-                                                    ? "${calcularDiferencaEmDias(widget.projeto!.dataInicial, widget.projeto!.dataEntrega)}"
-                                                    : "s/efeito",
-                                                style: const TextStyle(
-                                                    fontSize: 18),
-                                              ),
+                                      //  INICIO REALIZADO
+                                      GestureDetector(
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                4), // Aqui define-se o raio da borda
+                                          ),
+                                          elevation:
+                                              5, // Define a sombra do Card
+                                          margin:
+                                              const EdgeInsets.only(left: 10),
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            height: 23,
+                                            width: 120,
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  width: 100,
+                                                  height: 50,
+                                                  child: Text(
+                                                    widget.projeto!.dataInicial,
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16,
+                                                        fontFamily: 'Poppins'),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 15),
+                                                  child: Container(
+                                                    width: 10,
+                                                    height: 10,
+                                                    color: Colors.transparent,
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 20,
+                                                      color: widget.projeto!
+                                                                  .dataInicial ==
+                                                              ""
+                                                          ? Colors.transparent
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 4),
-                                              child: Container(
-                                                  width: 10,
-                                                  height: 10,
-                                                  color: Colors.transparent,
-                                                  child: diasIcon),
-                                            ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    //  RESPONSÁVEL
-                                    GestureDetector(
-                                      onTap: () async {
-                                        if (widget.projeto!.status !=
-                                            Status.TERMINADA) {
-                                          resultResponsavel =
-                                              (await _openDialog(
-                                            context,
-                                            "Responsável",
-                                            widget.projeto!.responsavelTarefa,
-                                          ));
+                                        onTap: () async {
+                                          if (widget.projeto!.status !=
+                                              Status.TERMINADA) {
+                                            resultInicioRealizado =
+                                                await _openDialog(
+                                                    context,
+                                                    AppLocalizations.of(widget
+                                                            .contextGarrafa)!
+                                                        .completedstart,
+                                                    widget
+                                                        .projeto!.dataInicial);
 
-                                          if (resultResponsavel != null) {
-                                            widget.projeto!.responsavelTarefa =
-                                                resultResponsavel!;
-                                            firestore
-                                                .collection(
-                                                    'TarefasGestao${campeonato}')
-                                                .doc((widget.projeto!.id)
-                                                    .toString())
-                                                .update({
-                                              'responsavelTarefa': widget
-                                                  .projeto!.responsavelTarefa
-                                            });
+                                            if (resultInicioRealizado != null) {
+                                              widget.projeto!.dataInicial =
+                                                  resultInicioRealizado!;
+                                              firestore
+                                                  .collection(
+                                                      'TarefasGestao$campeonato')
+                                                  .doc((widget.projeto!.id)
+                                                      .toString())
+                                                  .update({
+                                                'dataInicial':
+                                                    widget.projeto!.dataInicial
+                                              });
+                                            }
                                           }
-                                        }
-                                      },
-                                      child: Card(
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 2,
+                                      ),
+                                      //  TÉRMINO ESTIMADO
+                                      Card(
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                               4), // Aqui define-se o raio da borda
@@ -868,18 +703,9 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                                                 height: 25,
                                                 child: Text(
                                                   widget
-                                                          .projeto!
-                                                          .responsavelTarefa
-                                                          .isEmpty
-                                                      ? ''
-                                                      : widget.projeto!
-                                                          .responsavelTarefa,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                      .projeto!.terminoEstimado,
                                                   style: const TextStyle(
                                                       color: Colors.black,
-                                                      backgroundColor:
-                                                          Colors.transparent,
                                                       fontSize: 16,
                                                       fontFamily: 'Poppins'),
                                                   textAlign: TextAlign.center,
@@ -892,95 +718,371 @@ class _GestaoDetailPageState extends State<GestaoDetailPage> {
                                                   width: 10,
                                                   height: 10,
                                                   color: Colors.transparent,
-                                                  child: Icon(Icons.check,
-                                                      size: 20,
-                                                      color:
-                                                          resultResponsavel !=
-                                                                  ""
-                                                              ? Colors.black
-                                                              : Colors
-                                                                  .transparent),
+                                                  child: Icon(
+                                                    Icons.check,
+                                                    size: 20,
+                                                    color: widget.projeto!
+                                                                .terminoEstimado ==
+                                                            ""
+                                                        ? Colors.transparent
+                                                        : Colors.black,
+                                                  ),
                                                 ),
                                               )
                                             ],
                                           ),
                                         ),
                                       ),
+                                      const SizedBox(
+                                        height: 2,
+                                      ),
+                                      //  TÉRMINO REALIZADO
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (widget.projeto!.status !=
+                                              Status.TERMINADA) {
+                                            resultTerminoRealizado =
+                                                await _openDialog(
+                                                    context,
+                                                    AppLocalizations.of(widget
+                                                            .contextGarrafa)!
+                                                        .completionaccomplished,
+                                                    widget
+                                                        .projeto!.dataEntrega);
+
+                                            //mudei
+                                            if (resultTerminoRealizado !=
+                                                null) {
+                                              widget.projeto!.dataEntrega =
+                                                  resultTerminoRealizado!;
+                                              firestore
+                                                  .collection(
+                                                      'TarefasGestao$campeonato')
+                                                  .doc((widget.projeto!.id)
+                                                      .toString())
+                                                  .update({
+                                                'dataEntrega':
+                                                    widget.projeto!.dataEntrega
+                                              });
+                                            }
+                                          }
+                                        },
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                4), // Aqui define-se o raio da borda
+                                          ),
+                                          elevation:
+                                              5, // Define a sombra do Card
+                                          margin:
+                                              const EdgeInsets.only(left: 10),
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            height: 25,
+                                            width: 120,
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  width: 100,
+                                                  height: 25,
+                                                  //mudei
+                                                  child: Text(
+                                                    widget.projeto!.dataEntrega,
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16,
+                                                        fontFamily: 'Poppins'),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 15),
+                                                  child: Container(
+                                                    width: 10,
+                                                    height: 10,
+                                                    color: Colors.transparent,
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 20,
+                                                      //mudei
+                                                      color: widget.projeto!
+                                                                  .dataEntrega ==
+                                                              ""
+                                                          ? Colors.transparent
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 2,
+                                      ),
+                                      //  DURAÇÃO EM DIAS
+                                      Card(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              4), // Aqui define-se o raio da borda
+                                        ),
+                                        elevation: 5, // Define a sombra do Card
+                                        margin: const EdgeInsets.only(left: 10),
+                                        child: Container(
+                                          color: Colors.transparent,
+                                          height: 25,
+                                          width: 120,
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width: 100,
+                                                height: 25,
+                                                child: Text(
+                                                  calcularDiferencaEmDias(
+                                                              widget.projeto!
+                                                                  .dataInicial,
+                                                              widget.projeto!
+                                                                  .dataEntrega) !=
+                                                          0
+                                                      ? "${calcularDiferencaEmDias(widget.projeto!.dataInicial, widget.projeto!.dataEntrega)}"
+                                                      : '${AppLocalizations.of(widget.contextGarrafa)!.noeffect}:',
+                                                  style: const TextStyle(
+                                                      fontSize: 18),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 4),
+                                                child: Container(
+                                                    width: 10,
+                                                    height: 10,
+                                                    color: Colors.transparent,
+                                                    child: diasIcon),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 2,
+                                      ),
+                                      //  RESPONSÁVEL
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (widget.projeto!.status !=
+                                              Status.TERMINADA) {
+                                            resultResponsavel =
+                                                (await _openDialog(
+                                              context,
+                                              AppLocalizations.of(
+                                                      widget.contextGarrafa)!
+                                                  .accountable,
+                                              widget.projeto!.responsavelTarefa,
+                                            ));
+
+                                            if (resultResponsavel != null) {
+                                              widget.projeto!
+                                                      .responsavelTarefa =
+                                                  resultResponsavel!;
+                                              firestore
+                                                  .collection(
+                                                      'TarefasGestao$campeonato')
+                                                  .doc((widget.projeto!.id)
+                                                      .toString())
+                                                  .update({
+                                                'responsavelTarefa': widget
+                                                    .projeto!.responsavelTarefa
+                                              });
+                                            }
+                                          }
+                                        },
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                4), // Aqui define-se o raio da borda
+                                          ),
+                                          elevation:
+                                              5, // Define a sombra do Card
+                                          margin:
+                                              const EdgeInsets.only(left: 10),
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            height: 25,
+                                            width: 120,
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  width: 100,
+                                                  height: 25,
+                                                  child: Text(
+                                                    widget
+                                                            .projeto!
+                                                            .responsavelTarefa
+                                                            .isEmpty
+                                                        ? ''
+                                                        : widget.projeto!
+                                                            .responsavelTarefa,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        fontSize: 16,
+                                                        fontFamily: 'Poppins'),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 15),
+                                                  child: Container(
+                                                    width: 10,
+                                                    height: 10,
+                                                    color: Colors.transparent,
+                                                    child: Icon(Icons.check,
+                                                        size: 20,
+                                                        color:
+                                                            resultResponsavel !=
+                                                                    ""
+                                                                ? Colors.black
+                                                                : Colors
+                                                                    .transparent),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // DESENVOLVENDO
+
+                  // dias Restantes
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5, bottom: 0),
+                    child: Text(
+                      AppLocalizations.of(widget.contextGarrafa)!.remainingdays,
+                    ),
+                  ),
+
+                  Text(
+                    countdown,
+                    style: TextStyle(
+                        fontFamily: 'LeagueGothic',
+                        fontSize: alturaTela < 600 ? 25 : 36,
+                        letterSpacing: 5.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  //const Spacer(),
+
+                  // Rodapé
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: alturaTela < 600 ? 35 : 45,
+                      decoration: BoxDecoration(
+                          color: widget.projeto!.status == Status.TERMINADA
+                              ? Colors.grey
+                              : colorDart.VermelhoPadrao,
+                          border: Border.all(color: Colors.black, width: 1),
+                          borderRadius: BorderRadius.circular(4)),
+                      child: TextButton(
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          if (widget.projeto!.dataInicial != "" &&
+                              widget.projeto!.dataEntrega != "" &&
+                              widget.projeto!.responsavelTarefa != "") {
+                            setState(() {
+                              widget.projeto!.status = Status.TERMINADA;
+                            });
+
+                            Status status = Status.TERMINADA;
+                            firestore
+                                .collection('TarefasGestao$campeonato')
+                                .doc((widget.projeto!.id).toString())
+                                .update({
+                              'status': status.toString().split('.').last
+                            });
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 16,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text(
+                                            AppLocalizations.of(
+                                                    widget.contextGarrafa)!
+                                                .attention,
+                                            style:
+                                                const TextStyle(fontSize: 20)),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          AppLocalizations.of(
+                                                  widget.contextGarrafa)!
+                                              .formwithincorrectdata,
+                                        ),
+                                        const SizedBox(height: 20),
+                                        ElevatedButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: const Text('Ok'),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                        child: Text(
+                          widget.projeto!.status == Status.TERMINADA
+                              ? AppLocalizations.of(widget.contextGarrafa)!.taskaccomplished
+                              : AppLocalizations.of(widget.contextGarrafa)!.finishtask,
+                          style: TextStyle(
+                              fontSize: alturaTela < 600 ? 14 : 20,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                // DESENVOLVENDO
-
-                // dias Restantes
-                const Padding(
-                  padding: EdgeInsets.only(top: 5, bottom: 0),
-                  child: Text('DIAS RESTANTES'),
-                ),
-
-                Text(
-                  countdown,
-                  style: TextStyle(
-                      fontFamily: 'LeagueGothic',
-                      fontSize: alturaTela < 600 ? 25 : 36,
-                      letterSpacing: 5.0,
-                      fontWeight: FontWeight.bold),
-                ),
-                //const Spacer(),
-
-                // Rodapé
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 15),
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: alturaTela < 600 ? 35 : 45,
-                    decoration: BoxDecoration(
-                        color: widget.projeto!.status == Status.TERMINADA
-                            ? Colors.grey
-                            : colorDart.VermelhoPadrao,
-                        border: Border.all(color: Colors.black, width: 1),
-                        borderRadius: BorderRadius.circular(4)),
-                    child: TextButton(
-                      onPressed: () {
-                        HapticFeedback.lightImpact();
-                        if (widget.projeto!.dataInicial != "" &&
-                            widget.projeto!.dataEntrega != "" &&
-                            widget.projeto!.responsavelTarefa != "") {
-                          setState(() {
-                            widget.projeto!.status = Status.TERMINADA;
-                          });
-
-                          Status status = Status.TERMINADA;
-                          firestore
-                              .collection('TarefasGestao${campeonato}')
-                              .doc((widget.projeto!.id).toString())
-                              .update({
-                            'status': status.toString().split('.').last
-                          });
-                        }
-                      },
-                      child: Text(
-                        widget.projeto!.status == Status.TERMINADA
-                            ? 'TAREFA REALIZADA'
-                            : 'FINALIZAR TAREFA',
-                        style: TextStyle(
-                            fontSize: alturaTela < 600 ? 14 : 20,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -997,10 +1099,10 @@ class MyDialog extends StatelessWidget {
   final maskFormatter = MaskTextInputFormatter(mask: '##/##/####');
 
   MyDialog({
-    Key? key,
+    super.key,
     required this.titulo,
     required this.parametro,
-  }) : super(key: key);
+  });
 
   String? _validateDate(String? value) {
     if (value == null || value.isEmpty) {
@@ -1043,7 +1145,7 @@ class MyDialog extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Defina $titulo',
+                'Define $titulo',
                 style: const TextStyle(fontSize: 12),
               ),
               const SizedBox(
@@ -1058,7 +1160,7 @@ class MyDialog extends StatelessWidget {
                 child: Container(
                     alignment: Alignment.center,
                     width: 150,
-                    child: titulo == "Responsável"
+                   child: titulo == "Accountable" || titulo == "Responsável"
                         ? TextFormField(
                             controller: controller,
                             keyboardType: TextInputType.name,

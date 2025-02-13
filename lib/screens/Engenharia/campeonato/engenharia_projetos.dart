@@ -10,19 +10,30 @@ import 'package:senai_f1/screens/Tijolo/tijolo.dart';
 import 'package:senai_f1/screens/sessao_das_areas/HomeScreen.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
+import 'package:senai_f1/utils/numeroGarrafas.dart';
 import 'package:senai_f1/widgets/customDrawer.dart';
-//import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
 
-class EngenhariaProjetos extends StatelessWidget {
+class EngenhariaProjetos extends StatefulWidget {
   // ServiceGestao service = ServiceGestao();
+  final context;
+  final campeonato;
+  const EngenhariaProjetos({super.key, this.context, this.campeonato});
 
-  EngenhariaProjetos({super.key});
+  @override
+  State<EngenhariaProjetos> createState() => _EngenhariaProjetosState();
+}
+
+class _EngenhariaProjetosState extends State<EngenhariaProjetos> {
   AuthService serviceAuth = AuthService();
+
   ColorsDart colorDart = ColorsDart();
 
-  void _showDialog(BuildContext context) {
+  void _showDialog(BuildContext contextPagina) {
+    final t = AppLocalizations.of(contextPagina);
+
     showDialog(
-      context: context,
+      context: contextPagina,
       barrierDismissible: true, // Permite fechar ao tocar fora
       builder: (BuildContext context) {
         return Dialog(
@@ -43,21 +54,21 @@ class EngenhariaProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: Color.fromRGBO(146, 0, 0, 1),
+                        color: const Color.fromRGBO(146, 0, 0, 1),
                       ),
                       const SizedBox(
                         width: 20,
                       ),
-                      const Text('TAREFA ATRASADA',
-                          style:
-                              TextStyle(fontFamily: 'Poppins', fontSize: 11)),
+                      Text(t!.overduetask.toUpperCase(),
+                          style: const TextStyle(
+                              fontFamily: 'Poppins', fontSize: 11)),
                     ],
                   ),
                 ),
                 const SizedBox(
                   height: 10,
                 ),
-                Container(
+                SizedBox(
                   width: 350,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -65,14 +76,14 @@ class EngenhariaProjetos extends StatelessWidget {
                       Container(
                         width: 40,
                         height: 40,
-                        color: Color.fromRGBO(248, 200, 61, 1),
+                        color: const Color.fromRGBO(248, 200, 61, 1),
                       ),
                       const SizedBox(
                         width: 20,
                       ),
-                      const Text('TAREFA TERMINANDO',
-                          style:
-                              TextStyle(fontFamily: 'Poppins', fontSize: 11)),
+                      Text(t.taskfinishing.toUpperCase(),
+                          style: const TextStyle(
+                              fontFamily: 'Poppins', fontSize: 11)),
                     ],
                   ),
                 ),
@@ -92,9 +103,9 @@ class EngenhariaProjetos extends StatelessWidget {
                       const SizedBox(
                         width: 20,
                       ),
-                      const Text('TAREFA FINALIZADA',
-                          style:
-                              TextStyle(fontFamily: 'Poppins', fontSize: 11)),
+                      Text(t.taskcompleted.toUpperCase(),
+                          style: const TextStyle(
+                              fontFamily: 'Poppins', fontSize: 11)),
                     ],
                   ),
                 ),
@@ -114,9 +125,9 @@ class EngenhariaProjetos extends StatelessWidget {
                       const SizedBox(
                         width: 20,
                       ),
-                      const Text('TAREFA EM ANDAMENTO',
-                          style:
-                              TextStyle(fontFamily: 'Poppins', fontSize: 11)),
+                      Text(t.taskinprogress.toUpperCase(),
+                          style: const TextStyle(
+                              fontFamily: 'Poppins', fontSize: 11)),
                     ],
                   ),
                 ),
@@ -136,9 +147,9 @@ class EngenhariaProjetos extends StatelessWidget {
                     HapticFeedback.lightImpact(); // Vibração leve
                     Navigator.of(context).pop(); // Fecha o dialog
                   },
-                  child: const Text(
-                    'Fechar',
-                    style: TextStyle(color: Colors.white),
+                  child: Text(
+                    t.close,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -150,313 +161,374 @@ class EngenhariaProjetos extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    atualizarGarrafasTerminadas();
+    super.initState();
+  }
+
+  int garrafasTerminadas = 0;
+
+  // Método para chamar o serviço e atualizar a variável
+  void atualizarGarrafasTerminadas() async {
+    // Criando a instância de ProjetoService
+    garrafasSessao projetoService = garrafasSessao();
+
+    // Chamando o método numeroGarrasTerminadas() e esperando o resultado
+    int resultado = await projetoService.numeroGarrafasTerminadas(
+        'TarefasEngenharia', widget.campeonato);
+
+    setState(() {
+      garrafasTerminadas = resultado;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    int totalGarrafas = 700000;
     print(Provider.of<MainModel>(context, listen: false).campeonato);
     String campeonato =
         Provider.of<MainModel>(context, listen: false).campeonato;
     print('O CAMPEONATO É $campeonato');
 
-    return Scaffold(
-      backgroundColor: colorDart.FundoApp,
-      drawer: CustomDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 32, bottom: 0, left: 8, right: 8),
-        child: Center(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // AppBar
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 70,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: ColorsDart().VermelhoPadrao,
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8))),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              HapticFeedback.lightImpact(); // Vibração leve
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              width: 35, // Largura da bola
-                              height: 35, // Altura da bola
-                              decoration: const BoxDecoration(
-                                color: Colors.black, // Cor da bola (preto)
-                                shape: BoxShape.circle, // Forma circular
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.arrow_back, // Ícone de casa
-                                  color: Colors.white, // Cor do ícone
-                                  size: 25, // Tamanho do ícone
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 100,
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/logo1.png'), // Substitua pelo caminho do seu logo
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              HapticFeedback.lightImpact(); // Vibração leve
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Homescreen(),
-                                  ));
-                            },
-                            child: Container(
-                              width: 40, // Largura da bola
-                              height: 35, // Altura da bola
-                              decoration: const BoxDecoration(
-                                color: Colors.black, // Cor da bola (preto)
-                                shape: BoxShape.circle, // Forma circular
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.only(
-                                    bottom: 0, left: 0, right: 0),
-                                child: Icon(
-                                  Icons.house,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-
-                // // Tijolo ,  Total de Garrafas  ,  Legenda
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          //GARRAFAS E TIJOLO
-                          Container(
-                            height: 90,
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                    color: colorDart.VermelhoPadrao, width: 1)),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        backgroundColor: colorDart.FundoApp,
+        drawer: CustomDrawer(context: context),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 32, bottom: 0, left: 8, right: 8),
+          child: Center(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height - 30,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // AppBar
+                      Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 70,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: ColorsDart().VermelhoPadrao,
+                              borderRadius: const BorderRadius.only(
+                                  bottomLeft: Radius.circular(8),
+                                  bottomRight: Radius.circular(8),
+                                  topLeft: Radius.circular(8),
+                                  topRight: Radius.circular(8))),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10, right: 10),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5, vertical: 0),
+                                GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback
+                                        .lightImpact(); // Vibração leve
+                                    Navigator.pop(context);
+                                  },
                                   child: Container(
-                                    width: 65,
-                                    height: 60,
+                                    width: 35, // Largura da bola
+                                    height: 35, // Altura da bola
                                     decoration: const BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            'assets/tijolo.png'), // Substitua pelo caminho do seu logo
-                                        fit: BoxFit.cover,
+                                      color:
+                                          Colors.black, // Cor da bola (preto)
+                                      shape: BoxShape.circle, // Forma circular
+                                    ),
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.arrow_back, // Ícone de casa
+                                        color: Colors.white, // Cor do ícone
+                                        size: 25, // Tamanho do ícone
                                       ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.07,
+                                Container(
+                                  width: 100,
+                                  height: 40,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                          'assets/logo1.png'), // Substitua pelo caminho do seu logo
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 10),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Text(
-                                        'Engenharia',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
+                                GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback
+                                        .lightImpact(); // Vibração leve
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Homescreen(),
+                                        ));
+                                  },
+                                  child: Container(
+                                    width: 40, // Largura da bola
+                                    height: 35, // Altura da bola
+                                    decoration: const BoxDecoration(
+                                      color:
+                                          Colors.black, // Cor da bola (preto)
+                                      shape: BoxShape.circle, // Forma circular
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: 0, left: 0, right: 0),
+                                      child: Icon(
+                                        Icons.house,
+                                        color: Colors.white,
                                       ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        'Total de Garrafas \n arrecadadas: $totalGarrafas',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                            fontFamily: 'Poppins'),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
+                          )),
 
-                          // LEGENDA
-                          Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.lightImpact(); // Vibração leve
-                                  _showDialog(context);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.only(top: 5),
+                      // // Tijolo ,  Total de Garrafas  ,  Legenda
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                //GARRAFAS E TIJOLO
+                                Container(
+                                  height: 90,
                                   width:
-                                      45, // Largura do Container (tamanho quadrado)
-                                  height:
-                                      45, // Altura do Container (tamanho quadrado)
+                                      MediaQuery.of(context).size.width * 0.8,
                                   decoration: BoxDecoration(
-                                    color: colorDart
-                                        .VermelhoPadrao, // Cor de fundo do Container
-                                    borderRadius: BorderRadius.circular(
-                                        8), // Bordas arredondadas (opcional)
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: colorDart.VermelhoPadrao,
+                                          width: 1)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5, vertical: 0),
+                                        child: Container(
+                                          width: 65,
+                                          height: 60,
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.rectangle,
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                  'assets/tijolo.png'), // Substitua pelo caminho do seu logo
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.07,
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 10),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              AppLocalizations.of(context)!
+                                                  .engineering,
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              '${AppLocalizations.of(context)!.totalbottlescollected}: $garrafasTerminadas',
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                  fontFamily: 'Poppins'),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  child: Image.asset("assets/iconlegenda.png"),
                                 ),
-                              ),
-                              const Text(
-                                'Legenda',
-                                style: TextStyle(fontSize: 8),
-                              )
-                            ],
+
+                                // LEGENDA
+                                Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        HapticFeedback
+                                            .lightImpact(); // Vibração leve
+                                        _showDialog(
+                                          context,
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.only(top: 5),
+                                        width:
+                                            45, // Largura do Container (tamanho quadrado)
+                                        height:
+                                            45, // Altura do Container (tamanho quadrado)
+                                        decoration: BoxDecoration(
+                                          color: colorDart
+                                              .VermelhoPadrao, // Cor de fundo do Container
+                                          borderRadius: BorderRadius.circular(
+                                              8), // Bordas arredondadas (opcional)
+                                        ),
+                                        child: Image.asset(
+                                            "assets/iconlegenda.png"),
+                                      ),
+                                    ),
+                                    Text(
+                                      AppLocalizations.of(context)!.caption,
+                                      style: const TextStyle(fontSize: 8),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
+                          //Text('Conteúdo'),
                         ],
                       ),
-                    ),
-                    //Text('Conteúdo'),
-                  ],
-                ),
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: GarrafasEngenharia(
-                        campeonato: campeonato,
-                      )),
-                ),
-                Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: GarrafasEngenharia(
+                                campeonato: campeonato,
+                                contextGarrafa: context)),
+                      ),
+                      const Spacer(),
 
-                // Rodapé
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          HapticFeedback.lightImpact(); // Vibração leve
-                          campeonato == "Regional"
-                              ? Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ReciclagemRegional(
-                                      titulo: 'Engenharia',
-                                      banco: "TarefasEngenhariaRegional",
-                                    ),
-                                  ))
-                              : campeonato == "Nacional"
-                                  ? Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ReciclagemNacional(
-                                          titulo: 'Engenharia',
-                                          banco: "TarefasEngenhariaNacional",
-                                        ),
-                                      ))
-                                  : Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ReciclagemMundial(
-                                          titulo: 'Engenharia',
-                                          banco: "TarefasEngenhariaMundial",
-                                        ),
-                                      ));
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          height: 35,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.black, width: 1),
-                              borderRadius: BorderRadius.circular(4)),
-                          child: const Text(
-                            'Reciclagem',
-                            style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          String banco =
-                              Provider.of<MainModel>(context, listen: false)
-                                  .area = 'TarefasEngenharia';
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Tijolo(
-                                  titulo: 'Engenharia',
-                                  banco: banco,
-                                  campeonato: campeonato,
+                      // Rodapé
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            //RECICLAGEM
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact(); // Vibração leve
+                                campeonato == "Regional"
+                                    ? Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ReciclagemRegional(
+                                            titulo:
+                                                AppLocalizations.of(context)!
+                                                    .engineering,
+                                            banco: "TarefasEngenhariaRegional",
+                                          ),
+                                        ))
+                                    : campeonato == "Nacional"
+                                        ? Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ReciclagemNacional(
+                                                titulo: AppLocalizations.of(
+                                                        context)!
+                                                    .engineering,
+                                                banco:
+                                                    "TarefasEngenhariaNacional",
+                                              ),
+                                            ))
+                                        : Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ReciclagemMundial(
+                                                titulo: AppLocalizations.of(
+                                                        context)!
+                                                    .engineering,
+                                                banco:
+                                                    "TarefasEngenhariaMundial",
+                                              ),
+                                            ));
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        color: Colors.black, width: 1),
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Text(
+                                  AppLocalizations.of(context)!
+                                      .recycling
+                                      .toUpperCase(),
+                                  style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.bold),
                                 ),
-                              ));
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          height: 35,
-                          decoration: BoxDecoration(
-                              color: colorDart.VermelhoPadrao,
-                              border: Border.all(color: Colors.black, width: 1),
-                              borderRadius: BorderRadius.circular(4)),
-                          child: const Text(
-                            'Tijolo',
-                            style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            //TIJOLO
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                String banco = Provider.of<MainModel>(context,
+                                        listen: false)
+                                    .area = 'TarefasEngenharia';
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Tijolo(
+                                        titulo: AppLocalizations.of(context)!
+                                            .engineering,
+                                        banco: banco,
+                                        campeonato: campeonato,
+                                      ),
+                                    ));
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                    color: colorDart.VermelhoPadrao,
+                                    border: Border.all(
+                                        color: Colors.black, width: 1),
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Text(
+                                  AppLocalizations.of(context)!.brick,
+                                  style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),

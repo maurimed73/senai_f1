@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class BarraComValores extends StatefulWidget {
+  const BarraComValores({super.key});
+
   @override
   _BarraComValoresState createState() => _BarraComValoresState();
 }
@@ -12,7 +14,7 @@ class _BarraComValoresState extends State<BarraComValores> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Barras Dinâmicas'),
+        title: const Text('Barras Dinâmicas'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -31,15 +33,15 @@ class _BarraComValoresState extends State<BarraComValores> {
                 children: List.generate(21, (index) {
                   return Text(
                     '$index',
-                    style: TextStyle(fontSize: 10),
+                    style: const TextStyle(fontSize: 10),
                   );
                 }),
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             // Segunda barra (que irá aumentar conforme os dados)
             CustomPaint(
-              size: Size(50, 200),
+              size: const Size(50, 200),
               painter: BarraPainter(valorDaBarra),
             ),
           ],
@@ -52,7 +54,7 @@ class _BarraComValoresState extends State<BarraComValores> {
             valorDaBarra = (valorDaBarra + 5) % 21; // Valores de 0 a 20
           });
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

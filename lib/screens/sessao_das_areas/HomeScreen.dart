@@ -1,23 +1,25 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:senai_f1/screens/Empreendimento/campeonato/empreendimento_projetos.dart';
+// import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localization.dart';
+import 'package:senai_f1/models/projeto_model.dart';
 import 'package:senai_f1/screens/Empreendimento/reg_nac_mund_empreendimento.dart';
 import 'package:senai_f1/screens/Engenharia/reg_nac_mund_engenharia.dart';
-
 import 'package:senai_f1/screens/GestaoProjeto/reg_nac_gestao.dart';
-import 'package:senai_f1/screens/TarefasGerais/campeonato/tarefasGerais_projetos.dart';
 import 'package:senai_f1/screens/TarefasGerais/reg_nac_mund_tarefasgerais.dart';
 import 'package:senai_f1/services/login_service.dart';
 import 'package:senai_f1/utils/colors.dart';
 import 'package:senai_f1/widgets/customDrawer.dart';
 
-//import 'package:awesome_dialog/awesome_dialog.dart';
-
 class Homescreen extends StatefulWidget {
-  // ServiceGestao service = ServiceGestao();
+  void Function(Locale)? onLanguageChanged;
 
-  Homescreen({super.key});
+  Homescreen({
+    super.key,
+    this.onLanguageChanged,
+  });
 
   @override
   State<Homescreen> createState() => _HomescreenState();
@@ -26,11 +28,12 @@ class Homescreen extends StatefulWidget {
 class _HomescreenState extends State<Homescreen> {
   ColorsDart colorDart = ColorsDart();
   AuthService serviceAuth = AuthService();
-
+ 
 // Função que exibe o AlertDialog
   @override
   void initState() {
     //Provider.of<MainModel>(context, listen: false).fetchItems();
+   
     super.initState();
   }
 
@@ -45,7 +48,7 @@ class _HomescreenState extends State<Homescreen> {
           ),
           elevation: 10,
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -128,7 +131,7 @@ class _HomescreenState extends State<Homescreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(), // Fecha o diálogo
-              child: Text("Não"),
+              child: const Text("Não"),
             ),
             TextButton(
               onPressed: () {
@@ -136,7 +139,7 @@ class _HomescreenState extends State<Homescreen> {
                 serviceAuth.signOut();
                 Navigator.pushReplacementNamed(context, '/login');
               },
-              child: Text("Sim"),
+              child: const Text("Sim"),
             ),
           ],
         );
@@ -144,244 +147,279 @@ class _HomescreenState extends State<Homescreen> {
     );
   }
 
+  // Criando o GlobalKey
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
+    double larguraTela = MediaQuery.of(context).size.width;
     print('Entrei na Sessão das Áreas');
-    return Scaffold(
-      backgroundColor: colorDart.FundoApp,
-      drawer: CustomDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 32, bottom: 0, left: 1, right: 1),
-        child: Center(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                // AppBar
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.33,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: ColorsDart().VermelhoPadrao,
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8))),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 0, right: 0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(0),
-                            height: MediaQuery.of(context).size.height * 0.18,
-                            color: Colors.transparent,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // SRR
-                                Column(
+    return PopScope(
+      canPop: false,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: colorDart.FundoApp,
+          drawer: CustomDrawer(context: context),
+          body: Padding(
+            padding:
+                const EdgeInsets.only(top: 32, bottom: 0, left: 1, right: 1),
+            child: Center(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // AppBar
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.33,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: ColorsDart().VermelhoPadrao,
+                            borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8),
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8))),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0, right: 0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(0),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.18,
+                                color: Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 0, top: 10),
-                                      child: Container(
-                                        width: 75, // Largura da bola
-                                        height: 35, // Altura da bola
-                                        decoration: const BoxDecoration(
-                                          color: Colors
-                                              .transparent, // Cor da bola (preto)
-                                        ),
-                                        child: Center(
-                                            child: ColorFiltered(
-                                          colorFilter: const ColorFilter.mode(
-                                              Colors.white, BlendMode.srcIn),
-                                          child: Image.asset(
-                                            'assets/logo2.png',
-                                            fit: BoxFit.cover,
+                                    // SRR
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 0, top: 10),
+                                          child: Container(
+                                            width: 75, // Largura da bola
+                                            height: 35, // Altura da bola
+                                            decoration: const BoxDecoration(
+                                              color: Colors
+                                                  .transparent, // Cor da bola (preto)
+                                            ),
+                                            child: Center(
+                                                child: ColorFiltered(
+                                              colorFilter:
+                                                  const ColorFilter.mode(
+                                                      Colors.white,
+                                                      BlendMode.srcIn),
+                                              child: Image.asset(
+                                                'assets/logo2.png',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            )),
                                           ),
-                                        )),
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                // LOGO CENTRAL
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          right: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.06),
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.45,
-                                        height:
-                                            MediaQuery.of(context).size.height *
+                                    // LOGO CENTRAL
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              right: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.06),
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.47,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
                                                 0.16,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.transparent,
-                                          shape: BoxShape.rectangle,
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                'assets/logo1.png'), // Substitua pelo caminho do seu logo
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                // PERSON ICON
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          HapticFeedback.lightImpact();
-                                        },
-                                        child: Container(
-                                          width: 40, // Largura da bola
-                                          height: 35, // Altura da bola
-                                          decoration: const BoxDecoration(
-                                            color: Colors
-                                                .black, // Cor da bola (preto)
-                                            shape: BoxShape
-                                                .circle, // Forma circular
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.only(
-                                                bottom: 0, left: 0, right: 0),
-                                            child: Icon(
-                                              Icons.person,
-                                              color: Colors.white,
+                                            decoration: const BoxDecoration(
+                                              color: Colors.transparent,
+                                              shape: BoxShape.rectangle,
+                                              image: DecorationImage(
+                                                image: AssetImage(
+                                                    'assets/logo1.png'), // Substitua pelo caminho do seu logo
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
+                                      ],
+                                    ),
+                                    // PERSON ICON
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              HapticFeedback.lightImpact();
+                                              // _scaffoldKey.currentState
+                                              //     ?.openDrawer();
+                                              
+                                            },
+                                            child: Container(
+                                              width: 40, // Largura da bola
+                                              height: 35, // Altura da bola
+                                              decoration: const BoxDecoration(
+                                                color: Colors
+                                                    .black, // Cor da bola (preto)
+                                                shape: BoxShape
+                                                    .circle, // Forma circular
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.only(
+                                                    bottom: 0,
+                                                    left: 0,
+                                                    right: 0),
+                                                child: Icon(
+                                                  Icons.menu,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.only(bottom: 0),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.13,
+                                color: Colors.transparent,
+                                child: Text(
+                                  AppLocalizations.of(context)!.titleSection,
+                                  style: TextStyle(
+                                      fontSize: larguraTela < 400 ? 46 : 52,
+                                      fontFamily: 'LeagueGothic',
+                                      fontWeight: FontWeight.w500,
+                                      shadows: [
+                                        Shadow(
+                                          offset: const Offset(3.0,
+                                              3.0), // Posição da sombra (horizontal, vertical)
+                                          blurRadius:
+                                              10.0, // A quantidade de desfoque da sombra
+                                          color: Colors.black
+                                              // ignore: deprecated_member_use
+                                              .withOpacity(
+                                                  0.7), // Cor da sombra
+                                        ),
+                                      ],
+                                      color: Colors.white),
+                                ),
+                              )
+                            ],
+                          ),
+                        )),
+
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 12, top: 10, right: 12, bottom: 5),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.58,
+                        decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: colorDart.VermelhoPadrao.withAlpha(80),
+                                width: 1)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Sessao(
+                                        corfundo: Colors.black,
+                                        titulo: AppLocalizations.of(context)!
+                                            .engineering,
+                                        image: 'assets/icon_engenharia.png',
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const reg_nac_Engenharia(),
+                                              ));
+                                        }),
+                                    Sessao(
+                                      corfundo: colorDart.VermelhoPadrao,
+                                      titulo: AppLocalizations.of(context)!
+                                          .projectmanagement,
+                                      image: 'assets/icon_gestaoprojeto.png',
+                                      onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const reg_nac_Gestao(),
+                                          )),
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.only(bottom: 0),
-                            height: MediaQuery.of(context).size.height * 0.13,
-                            color: Colors.transparent,
-                            child: Text(
-                              'SESSÃO DAS ÁREAS',
-                              style: TextStyle(
-                                  fontSize: 52,
-                                  fontFamily: 'LeagueGothic',
-                                  fontWeight: FontWeight.w500,
-                                  shadows: [
-                                    Shadow(
-                                      offset: const Offset(3.0,
-                                          3.0), // Posição da sombra (horizontal, vertical)
-                                      blurRadius:
-                                          10.0, // A quantidade de desfoque da sombra
-                                      color: Colors.black
-                                          .withOpacity(0.7), // Cor da sombra
-                                    ),
-                                  ],
-                                  color: Colors.white),
-                            ),
-                          )
-                        ],
-                      ),
-                    )),
-
-                Padding(
-                  padding: const EdgeInsets.only(
-                      left: 2, top: 10, right: 2, bottom: 5),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.58,
-                    decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: colorDart.VermelhoPadrao.withAlpha(80),
-                            width: 1)),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Column(
-                          children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Sessao(
-                                    corfundo: Colors.black,
-                                    titulo: 'Engenharia',
-                                    image: 'assets/icon_engenharia.png',
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                reg_nac_Engenharia(),
-                                          ));
-                                    }),
-                                Sessao(
                                   corfundo: colorDart.VermelhoPadrao,
-                                  titulo: 'Gestão de Projetos',
-                                  image: 'assets/icon_gestaoprojeto.png',
+                                  titulo: AppLocalizations.of(context)!
+                                      .generaltasks,
+                                  image: 'assets/icon_tarefasgerais.png',
                                   onPressed: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => reg_nac_Gestao(),
+                                        builder: (context) =>
+                                            const reg_nac_TarefasGerais(),
+                                      )),
+                                ),
+                                Sessao(
+                                  corfundo: Colors.black,
+                                  titulo:
+                                      AppLocalizations.of(context)!.enterprise,
+                                  image: 'assets/icon_empreendimento.png',
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const reg_nac_Empreendimento(),
                                       )),
                                 ),
                               ],
-                            ),
+                            )
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Sessao(
-                              corfundo: colorDart.VermelhoPadrao,
-                              titulo: 'Tarefas Gerais',
-                              image: 'assets/icon_tarefasgerais.png',
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        reg_nac_TarefasGerais(),
-                                  )),
-                            ),
-                            Sessao(
-                              corfundo: Colors.black,
-                              titulo: 'Empreendimento',
-                              image: 'assets/icon_empreendimento.png',
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        reg_nac_Empreendimento(),
-                                  )),
-                            ),
-                          ],
-                        )
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+  
+
 }
 
 class Sessao extends StatelessWidget {
@@ -392,12 +430,12 @@ class Sessao extends StatelessWidget {
       onPressed; // Função callback para quando o botão for pressionado
 
   Sessao({
-    Key? key,
+    super.key,
     required this.corfundo,
     required this.titulo,
     required this.image,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -407,7 +445,7 @@ class Sessao extends StatelessWidget {
       children: [
         Container(
           alignment: Alignment.center,
-          padding: EdgeInsets.all(2),
+          padding: const EdgeInsets.all(2),
 
           // width:
           //     MediaQuery.of(context).size.width * 0.2, // Largura do Container
@@ -429,7 +467,7 @@ class Sessao extends StatelessWidget {
               HapticFeedback.lightImpact(); // Vibração leve
             },
             child: Container(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               width: MediaQuery.of(context).size.width *
                   0.29, // Largura interna (menor que a externa)
               height: MediaQuery.of(context).size.width *
@@ -444,15 +482,15 @@ class Sessao extends StatelessWidget {
               ),
               child: Padding(
                 padding: image == 'assets/icon_tarefasgerais.png'
-                    ? EdgeInsets.only(left: 10)
-                    : EdgeInsets.only(left: 0),
+                    ? const EdgeInsets.only(left: 10)
+                    : const EdgeInsets.only(left: 0),
                 child: Container(
                   width: 20,
                   height: 20,
                   alignment: Alignment.center,
                   child: ColorFiltered(
                       colorFilter:
-                          ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                          const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                       child: Image.asset(
                         image,
                       )),
@@ -461,7 +499,7 @@ class Sessao extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         Container(
@@ -470,17 +508,11 @@ class Sessao extends StatelessWidget {
           color: Colors.transparent,
           child: Text(
             titulo,
-            style:
-                TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+            style: const TextStyle(
+                fontFamily: 'Poppins', fontWeight: FontWeight.w600),
             textAlign: TextAlign.center,
           ),
         ),
-
-        // Container(
-        //   color: corfundo,
-        //   height: 100,
-        //   width: 100,
-        // ),
       ],
     );
   }
